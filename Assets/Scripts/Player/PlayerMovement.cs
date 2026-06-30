@@ -7,12 +7,21 @@ public class PlayerMovement : MonoBehaviour
     [Header("Ajustes de Velocidad")]
     public float moveSpeed = 8f;
     public float jumpForce = 15f;
-    public float fastFallForce = 40f;
+    
+    [Tooltip("Velocidad fija de caída al presionar la tecla ABAJO")]
+    public float fastFallSpeed = 25f;
 
     [Header("Ajustes de Better Jump")]
     public float fallMultiplier = 2.5f;
     public float lowJumpMultiplier = 3.5f;
     
+    [Header("Ajustes de Game Feel")]
+    public float coyoteTime = 0.15f;
+    private float coyoteTimeCounter;
+
+    public float jumpBufferTime = 0.2f;
+    private float jumpBufferCounter;
+
     [Header("Controles")]
     public KeyCode keyLeft;
     public KeyCode keyRight;
@@ -24,7 +33,6 @@ public class PlayerMovement : MonoBehaviour
     public float groundCheckRadius = 0.2f;
     public LayerMask groundLayer;
     
-    // --- VARIABLES DE ESTADO ---
     public float facingDirection { get; private set; } = 1f; 
     public bool canMove = true;
     public bool isDashing = false; 
@@ -44,6 +52,24 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+        
+        if (isGrounded)
+        {
+            coyoteTimeCounter = coyoteTime;
+        }
+        else
+        {
+            coyoteTimeCounter -= Time.deltaTime;
+        }
+        
+        if (Input.GetKeyDown(keyJump))
+        {
+            jumpBufferCounter = jumpBufferTime;
+        }
+        else
+        {
+            jumpBufferCounter -= Time.deltaTime;
+        }
 
         if (!canMove)
         {
@@ -51,7 +77,6 @@ public class PlayerMovement : MonoBehaviour
             isFastFalling = false;
             isHoldingJump = false;
             
-            // Aunque no se pueda mover (ej: por Stun), debemos actualizar el Animator
             UpdateAnimator(0f);
             return;
         }
@@ -63,18 +88,25 @@ public class PlayerMovement : MonoBehaviour
         if (horizontalInput != 0)
         {
             facingDirection = horizontalInput;
-            FlipActiveVisuals(facingDirection); // <-- Volteamos el dibujo
+            FlipActiveVisuals(facingDirection); 
         }
-
-        if (Input.GetKeyDown(keyJump) && isGrounded)
+        
+        if (jumpBufferCounter > 0f && coyoteTimeCounter > 0f)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+            
+            jumpBufferCounter = 0f;
+            coyoteTimeCounter = 0f;
+        }
+        
+        if (Input.GetKeyUp(keyJump) && rb.linearVelocity.y > 0f)
+        {
+            coyoteTimeCounter = 0f;
         }
         
         isHoldingJump = Input.GetKey(keyJump);
         isFastFalling = Input.GetKey(keyDown) && !isGrounded;
 
-        // Actualizamos las variables del Animator en cada frame
         UpdateAnimator(horizontalInput);
     }
 
@@ -90,8 +122,12 @@ public class PlayerMovement : MonoBehaviour
         {
             rb.linearVelocity = new Vector2(horizontalInput * moveSpeed, rb.linearVelocity.y);
         }
-
-        if (rb.linearVelocity.y < 0)
+        
+        if (isFastFalling)
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, -fastFallSpeed);
+        }
+        else if (rb.linearVelocity.y < 0)
         {
             rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.fixedDeltaTime;
         }
@@ -99,21 +135,10 @@ public class PlayerMovement : MonoBehaviour
         {
             rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1) * Time.fixedDeltaTime;
         }
-        
-        if (isFastFalling)
-        {
-            rb.linearVelocity += Vector2.down * fastFallForce * Time.fixedDeltaTime;
-        }
     }
 
-    // ==========================================
-    // NUEVO: SISTEMA DE ANIMACIÓN Y VISUALES
-    // ==========================================
-
-    // Busca cuál es el Animator que está encendido actualmente (Héroe o Banderín)
     private Animator GetActiveAnimator()
     {
-        // GetComponentsInChildren con (false) ignora los objetos apagados
         Animator[] animators = GetComponentsInChildren<Animator>(false); 
         if (animators.Length > 0) return animators[0];
         return null;
@@ -124,18 +149,12 @@ public class PlayerMovement : MonoBehaviour
         Animator activeAnim = GetActiveAnimator();
         if (activeAnim == null) return;
 
-        // 1. Velocidad (siempre en positivo gracias a Mathf.Abs)
         float currentSpeed = Mathf.Abs(input * moveSpeed);
         activeAnim.SetFloat("Speed", currentSpeed);
-
-        // 2. Suelo
         activeAnim.SetBool("isGrounded", isGrounded);
 
-        // 3. Stun (Si no puede moverse y no está usando el dash ni volando por los aires)
         bool isStunned = !canMove && !isDashing && !isKnockedBack;
         activeAnim.SetBool("isStunned", isStunned);
-
-        // 4. Dash
         activeAnim.SetBool("isDashing", isDashing);
     }
 
@@ -144,12 +163,10 @@ public class PlayerMovement : MonoBehaviour
         Animator activeAnim = GetActiveAnimator();
         if (activeAnim != null)
         {
-            // Solo invertimos la escala del hijo que tiene el dibujo, protegiendo al padre
             activeAnim.transform.localScale = new Vector3(direction, 1f, 1f);
         }
     }
 
-    // Esta función la puede llamar PlayerInventory cuando disparas un ítem
     public void TriggerCastAnimation()
     {
         Animator activeAnim = GetActiveAnimator();
@@ -158,10 +175,6 @@ public class PlayerMovement : MonoBehaviour
             activeAnim.SetTrigger("Cast");
         }
     }
-
-    // ==========================================
-    // FÍSICAS Y ESTADOS DE ALTERACIÓN
-    // ==========================================
 
     public void ApplyBounce(float bounceForce)
     {
