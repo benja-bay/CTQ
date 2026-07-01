@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 2657853975002613961}
   - component: {fileID: 3985746328817465796}
   - component: {fileID: 2875666751197281179}
+  - component: {fileID: 2771492465478632906}
   m_Layer: 0
   m_Name: Player1
   m_TagString: Hero
@@ -81,13 +82,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   moveSpeed: 8
   jumpForce: 15
-  fastFallForce: 40
+  fastFallSpeed: 25
   fallMultiplier: 2.5
   lowJumpMultiplier: 3.5
-  keyLeft: 97
-  keyRight: 100
-  keyJump: 119
-  keyDown: 115
+  coyoteTime: 0.15
+  jumpBufferTime: 0.2
   groundCheck: {fileID: 5186173040810756229}
   groundCheckRadius: 0.2
   groundLayer:
@@ -123,8 +122,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e644fc6a55de4cc7b8634e155b6f3063, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInventory
-  useItemKey: 118
-  discardItemKey: 98
   hasItem: 0
   currentItemData: {fileID: 0}
   heroPool:
@@ -227,6 +224,36 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.4258573, y: 0.12457454}
   m_EdgeRadius: 0
+--- !u!114 &2771492465478632906
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2176436381941793102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.PlayerInput
+  m_Actions: {fileID: -944628639613478452, guid: 20df86be8c204a2419adb0b8256e699a, type: 3}
+  m_NotificationBehavior: 0
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 1
+  m_DefaultControlScheme: Keyboard_P1
+  m_DefaultActionMap: Player
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
 --- !u!1 &3110137544476420458
 GameObject:
   m_ObjectHideFlags: 0

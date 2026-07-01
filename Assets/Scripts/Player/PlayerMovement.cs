@@ -1,7 +1,9 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using System.Collections;
 
 [RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(PlayerInput))]
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Ajustes de Velocidad")]
@@ -22,12 +24,6 @@ public class PlayerMovement : MonoBehaviour
     public float jumpBufferTime = 0.2f;
     private float jumpBufferCounter;
 
-    [Header("Controles")]
-    public KeyCode keyLeft;
-    public KeyCode keyRight;
-    public KeyCode keyJump;
-    public KeyCode keyDown;
-
     [Header("Detección de Suelo")]
     public Transform groundCheck;
     public float groundCheckRadius = 0.2f;
@@ -44,9 +40,30 @@ public class PlayerMovement : MonoBehaviour
     private bool isFastFalling;
     private bool isHoldingJump;
 
+    // --- VARIABLES DEL INPUT SYSTEM ---
+    private PlayerInput playerInput;
+    private InputAction moveAction;
+    private InputAction jumpAction;
+    private InputAction fastFallAction;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        playerInput = GetComponent<PlayerInput>();
+        playerInput.neverAutoSwitchControlSchemes = true; 
+        
+        if (gameObject.name == "Player1")
+        {
+            playerInput.SwitchCurrentControlScheme("Keyboard_P1", Keyboard.current);
+        }
+        else if (gameObject.name == "Player2")
+        {
+            playerInput.SwitchCurrentControlScheme("Keyboard_P2", Keyboard.current);
+        }
+        
+        moveAction = playerInput.actions["Move"];
+        jumpAction = playerInput.actions["Jump"];
+        fastFallAction = playerInput.actions["FastFall"];
     }
 
     void Update()
@@ -62,7 +79,7 @@ public class PlayerMovement : MonoBehaviour
             coyoteTimeCounter -= Time.deltaTime;
         }
         
-        if (Input.GetKeyDown(keyJump))
+        if (jumpAction.WasPressedThisFrame())
         {
             jumpBufferCounter = jumpBufferTime;
         }
@@ -81,13 +98,13 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        horizontalInput = 0f;
-        if (Input.GetKey(keyLeft)) horizontalInput = -1f;
-        if (Input.GetKey(keyRight)) horizontalInput = 1f;
+        // Lectura del nuevo Input System
+        Vector2 moveInput = moveAction.ReadValue<Vector2>();
+        horizontalInput = moveInput.x;
 
         if (horizontalInput != 0)
         {
-            facingDirection = horizontalInput;
+            facingDirection = Mathf.Sign(horizontalInput);
             FlipActiveVisuals(facingDirection); 
         }
         
@@ -99,13 +116,13 @@ public class PlayerMovement : MonoBehaviour
             coyoteTimeCounter = 0f;
         }
         
-        if (Input.GetKeyUp(keyJump) && rb.linearVelocity.y > 0f)
+        if (jumpAction.WasReleasedThisFrame() && rb.linearVelocity.y > 0f)
         {
             coyoteTimeCounter = 0f;
         }
         
-        isHoldingJump = Input.GetKey(keyJump);
-        isFastFalling = Input.GetKey(keyDown) && !isGrounded;
+        isHoldingJump = jumpAction.IsInProgress();
+        isFastFalling = (fastFallAction.IsInProgress() || moveInput.y < -0.5f) && !isGrounded;
 
         UpdateAnimator(horizontalInput);
     }
