@@ -40,7 +40,6 @@ public class PlayerMovement : MonoBehaviour
     private bool isFastFalling;
     private bool isHoldingJump;
 
-    // --- VARIABLES DEL INPUT SYSTEM ---
     private PlayerInput playerInput;
     private InputAction moveAction;
     private InputAction jumpAction;
@@ -51,14 +50,30 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         playerInput = GetComponent<PlayerInput>();
         playerInput.neverAutoSwitchControlSchemes = true; 
-        
+
+        var gamepads = Gamepad.all;
+
         if (gameObject.name == "Player1")
         {
-            playerInput.SwitchCurrentControlScheme("Keyboard_P1", Keyboard.current);
+            if (gamepads.Count > 0)
+            {
+                playerInput.SwitchCurrentControlScheme("Gamepad", gamepads[0]);
+            }
+            else
+            {
+                playerInput.SwitchCurrentControlScheme("Keyboard_P1", Keyboard.current);
+            }
         }
         else if (gameObject.name == "Player2")
         {
-            playerInput.SwitchCurrentControlScheme("Keyboard_P2", Keyboard.current);
+            if (gamepads.Count > 1)
+            {
+                playerInput.SwitchCurrentControlScheme("Gamepad", gamepads[1]);
+            }
+            else
+            {
+                playerInput.SwitchCurrentControlScheme("Keyboard_P2", Keyboard.current);
+            }
         }
         
         moveAction = playerInput.actions["Move"];
@@ -98,7 +113,6 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        // Lectura del nuevo Input System
         Vector2 moveInput = moveAction.ReadValue<Vector2>();
         horizontalInput = moveInput.x;
 

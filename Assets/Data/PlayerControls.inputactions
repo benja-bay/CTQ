@@ -77,6 +77,28 @@
                 },
                 {
                     "name": "",
+                    "id": "8978b73f-1e52-44ee-a037-c07dc6e56aad",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "01dd8cee-c8b2-4fed-a510-17a1f14d60f3",
+                    "path": "<HID::Microntek              USB Joystick          >/button3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "48890b97-6adb-4f1d-bbed-e313289cbeb7",
                     "path": "<Keyboard>/s",
                     "interactions": "",
@@ -93,6 +115,28 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard_P2",
+                    "action": "FastFall",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "cccd05fe-bf3d-41a5-8612-e51e481809eb",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "FastFall",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d160194c-cfa3-4e4b-be46-ba0042714f0d",
+                    "path": "<HID::Microntek              USB Joystick          >/button2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
                     "action": "FastFall",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -121,6 +165,28 @@
                 },
                 {
                     "name": "",
+                    "id": "869e948d-52f0-49fc-9635-fb408eab6292",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "UseItem",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "913bb390-2d52-4d8d-855f-bc368e644c71",
+                    "path": "<HID::Microntek              USB Joystick          >/button4",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "UseItem",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "f1a3f8bf-b2b5-44f0-8ee3-352cd0d5c3b4",
                     "path": "<Keyboard>/b",
                     "interactions": "",
@@ -137,6 +203,28 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard_P2",
+                    "action": "DiscardItem",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f47abf4e-ebf7-4d3e-8c90-424cdd68a272",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DiscardItem",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3426bd0f-3ec7-4849-b28c-4f52ce487480",
+                    "path": "<Joystick>/trigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
                     "action": "DiscardItem",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -250,6 +338,28 @@
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "6a1ed0b1-7d85-42b8-a6bd-fdbaedfd7edf",
+                    "path": "<Gamepad>/leftStick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5b0d81ea-a4fa-41b7-86a4-680556d9cb73",
+                    "path": "<HID::Microntek              USB Joystick          >/stick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }
@@ -272,6 +382,17 @@
             "devices": [
                 {
                     "devicePath": "<Keyboard>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        },
+        {
+            "name": "Gamepad",
+            "bindingGroup": "Gamepad",
+            "devices": [
+                {
+                    "devicePath": "<Gamepad>",
                     "isOptional": false,
                     "isOR": false
                 }
