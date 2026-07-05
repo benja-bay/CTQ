@@ -9,8 +9,6 @@ public class PlayerMovement : MonoBehaviour
     [Header("Ajustes de Velocidad")]
     public float moveSpeed = 8f;
     public float jumpForce = 15f;
-    
-    [Tooltip("Velocidad fija de caída al presionar la tecla ABAJO")]
     public float fastFallSpeed = 25f;
 
     [Header("Ajustes de Better Jump")]
@@ -33,6 +31,8 @@ public class PlayerMovement : MonoBehaviour
     public bool canMove = true;
     public bool isDashing = false; 
     public bool isKnockedBack = false;
+    public bool isPreparing = false;
+    public bool isCasting = false;
 
     private Rigidbody2D rb;
     private float horizontalInput;
@@ -183,8 +183,9 @@ public class PlayerMovement : MonoBehaviour
         float currentSpeed = Mathf.Abs(input * moveSpeed);
         activeAnim.SetFloat("Speed", currentSpeed);
         activeAnim.SetBool("isGrounded", isGrounded);
-
-        bool isStunned = !canMove && !isDashing && !isKnockedBack;
+        
+        bool isStunned = !canMove && !isDashing && !isKnockedBack && !isPreparing && !isCasting;
+        
         activeAnim.SetBool("isStunned", isStunned);
         activeAnim.SetBool("isDashing", isDashing);
     }

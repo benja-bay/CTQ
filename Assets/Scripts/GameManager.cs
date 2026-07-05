@@ -13,7 +13,6 @@ public class GameManager : MonoBehaviour
     private int currentRoundIndex = 0;
 
     [Header("Configuración del Tiempo")]
-    [Tooltip("Tiempo en segundos que el Banderín debe sobrevivir para ganar la ronda")]
     public float survivalTime = 30f; 
     private float remainingTime;
     private bool isRoundActive = false;
@@ -60,7 +59,6 @@ public class GameManager : MonoBehaviour
         {
             remainingTime -= Time.deltaTime;
             
-
             if (remainingTime <= 0)
             {
                 isRoundActive = false;
@@ -88,8 +86,6 @@ public class GameManager : MonoBehaviour
             selectedMaps.Add(availableMaps[randomIndex]);
             availableMaps.RemoveAt(randomIndex);
         }
-
-        Debug.Log($"New match started. Points required: {pointsToWinMatch}");
     }
 
     void OnMapLoaded(Scene scene, LoadSceneMode mode)
@@ -97,8 +93,16 @@ public class GameManager : MonoBehaviour
         FindElementsInMap();
         SpawnAndAssignRoles();
         
-        if (player1 != null && player1.TryGetComponent<PlayerMovement>(out var pm1)) pm1.canMove = false;
-        if (player2 != null && player2.TryGetComponent<PlayerMovement>(out var pm2)) pm2.canMove = false;
+        if (player1 != null && player1.TryGetComponent<PlayerMovement>(out var pm1))
+        {
+            pm1.canMove = false;
+            pm1.isPreparing = true;
+        }
+        if (player2 != null && player2.TryGetComponent<PlayerMovement>(out var pm2))
+        {
+            pm2.canMove = false;
+            pm2.isPreparing = true;
+        }
         
         if (UIManager.instance != null)
         {
@@ -133,30 +137,33 @@ public class GameManager : MonoBehaviour
     
     public void BeginRoundAfterCountdown()
     {
-        if (player1 != null && player1.TryGetComponent<PlayerMovement>(out var pm1)) pm1.canMove = true;
-        if (player2 != null && player2.TryGetComponent<PlayerMovement>(out var pm2)) pm2.canMove = true;
+        if (player1 != null && player1.TryGetComponent<PlayerMovement>(out var pm1))
+        {
+            pm1.canMove = true;
+            pm1.isPreparing = false;
+        }
+        if (player2 != null && player2.TryGetComponent<PlayerMovement>(out var pm2))
+        {
+            pm2.canMove = true;
+            pm2.isPreparing = false;
+        }
         
         remainingTime = survivalTime;
         isRoundActive = true;
     }
 
-    // --- CONDICIONES DE VICTORIA DE RONDA ---
     public void HeroCatchesBanner()
     {
-        if (!isRoundActive) return; // Evita doble activación
+        if (!isRoundActive) return; 
         isRoundActive = false;
 
         heroPoints++;
-        Debug.Log($"Point for Hero! Score: Hero {heroPoints} - Banner {bannerPoints}");
-
         CheckMatchWinner();
     }
     
     void BannerSurvived()
     {
         bannerPoints++;
-        Debug.Log($"Time's up! Point for Banner. Score: Hero {heroPoints} - Banner {bannerPoints}");
-
         CheckMatchWinner();
     }
 
@@ -164,12 +171,10 @@ public class GameManager : MonoBehaviour
     {
         if (heroPoints >= pointsToWinMatch)
         {
-            Debug.Log("Hero won the match! Swapping roles for the next match.");
             EndMatch();
         }
         else if (bannerPoints >= pointsToWinMatch)
         {
-            Debug.Log("Banner won the match! Swapping roles for the next match.");
             EndMatch();
         }
         else

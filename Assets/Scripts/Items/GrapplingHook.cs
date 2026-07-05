@@ -36,6 +36,9 @@ public class GrapplingHook : MonoBehaviour
         facingDirection = pm.facingDirection;
 
         playerMovement.canMove = false;
+        playerMovement.isCasting = true;
+        playerMovement.TriggerCastAnimation();
+        
         if (player.TryGetComponent<Rigidbody2D>(out playerRb))
         {
             originalGravity = playerRb.gravityScale;
@@ -161,7 +164,9 @@ public class GrapplingHook : MonoBehaviour
     private void FinishHook()
     {
         if (playerRb != null) playerRb.gravityScale = originalGravity;
+        
         playerMovement.canMove = true;
+        playerMovement.isCasting = false;
         
         if (bannerMovement != null) bannerMovement.canMove = true;
 
