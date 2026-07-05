@@ -47,6 +47,17 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        if (Random.value > 0.5f)
+        {
+            player1Role = Role.Banner;
+            player2Role = Role.Hero;
+        }
+        else
+        {
+            player1Role = Role.Hero;
+            player2Role = Role.Banner;
+        }
+
         if (selectedMaps.Count == 0)
         {
             GenerateNewMatch();
@@ -171,11 +182,11 @@ public class GameManager : MonoBehaviour
     {
         if (heroPoints >= pointsToWinMatch)
         {
-            EndMatch();
+            if (UIManager.instance != null) UIManager.instance.ShowVictoryScreen(Role.Hero);
         }
         else if (bannerPoints >= pointsToWinMatch)
         {
-            EndMatch();
+            if (UIManager.instance != null) UIManager.instance.ShowVictoryScreen(Role.Banner);
         }
         else
         {
@@ -183,7 +194,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void EndMatch()
+    public void RestartMatch()
     {
         heroPoints = 0;
         bannerPoints = 0;

@@ -183,9 +183,8 @@ public class PlayerMovement : MonoBehaviour
         float currentSpeed = Mathf.Abs(input * moveSpeed);
         activeAnim.SetFloat("Speed", currentSpeed);
         activeAnim.SetBool("isGrounded", isGrounded);
-        
+
         bool isStunned = !canMove && !isDashing && !isKnockedBack && !isPreparing && !isCasting;
-        
         activeAnim.SetBool("isStunned", isStunned);
         activeAnim.SetBool("isDashing", isDashing);
     }

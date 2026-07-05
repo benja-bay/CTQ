@@ -7,10 +7,16 @@ using System.Collections;
 public class UIManager : MonoBehaviour
 {
     public static UIManager instance;
-    
+
     [Header("Countdown UI")]
-    public Image countdownImage;
-    public Sprite[] countdownSprites;
+    public Image countdownImage;        
+    public Sprite[] countdownSprites;   
+
+    [Header("Victory UI")]
+    public GameObject victoryPanel;
+    public Image victoryTitleImage;
+    public Sprite knightWinScreen;
+    public Sprite flagWinScreen;
 
     [Header("Textos")]
     public TextMeshProUGUI timeText;
@@ -20,23 +26,23 @@ public class UIManager : MonoBehaviour
     public Sprite bannerSprite;
 
     [Header("Sprites de Puntos")]
-    public Sprite catchPointSprite;
-    public Sprite catchMarkerSprite;
-    public Sprite escapePointSprite;
-    public Sprite escapeMarkerSprite;
+    public Sprite catchPointSprite;   
+    public Sprite catchMarkerSprite;  
+    public Sprite escapePointSprite;  
+    public Sprite escapeMarkerSprite; 
 
     [Header("UI Player 1 (Izquierda)")]
     public Image p1AvatarImage;
     public Image p1ItemIconImage;
-    public Image[] p1PointBases;
-    public Image[] p1PointMarkers;
+    public Image[] p1PointBases;      
+    public Image[] p1PointMarkers;    
 
     [Header("UI Player 2 (Derecha)")]
     public Image p2AvatarImage;
     public Image p2ItemIconImage;
-    public Image[] p2PointBases;
-    public Image[] p2PointMarkers;
-    
+    public Image[] p2PointBases;      
+    public Image[] p2PointMarkers;    
+
     private PlayerInventory p1Inventory;
     private PlayerRole p1Role;
     private PlayerInventory p2Inventory;
@@ -60,6 +66,7 @@ public class UIManager : MonoBehaviour
     void Start()
     {
         FindPlayersInScene();
+        if (victoryPanel != null) victoryPanel.SetActive(false);
     }
 
     void OnDestroy()
@@ -92,14 +99,13 @@ public class UIManager : MonoBehaviour
     void Update()
     {
         if (GameManager.instance == null) return;
-        
+
         float time = GameManager.instance.GetRemainingTime();
         if (timeText != null) timeText.text = Mathf.CeilToInt(time).ToString();
 
         int heroPts = GameManager.instance.GetHeroPoints();
         int bannerPts = GameManager.instance.GetBannerPoints();
-        
-        // JUGADOR 1 (IZQUIERDA)
+
         if (p1Role != null)
         {
             if (p1AvatarImage != null)
@@ -115,7 +121,7 @@ public class UIManager : MonoBehaviour
                     p1AvatarImage.rectTransform.localScale = new Vector3(-1f, 1f, 1f);
                 }
             }
-            
+
             if (p1Role.currentRole == Role.Hero)
             {
                 UpdatePointsUI(p1PointBases, p1PointMarkers, catchPointSprite, catchMarkerSprite, heroPts);
@@ -131,8 +137,7 @@ public class UIManager : MonoBehaviour
             p1ItemIconImage.sprite = p1Inventory.hasItem ? p1Inventory.currentItemData.itemIcon : null;
             p1ItemIconImage.enabled = p1Inventory.hasItem;
         }
-        
-        // JUGADOR 2 (DERECHA)
+
         if (p2Role != null)
         {
             if (p2AvatarImage != null)
@@ -148,7 +153,7 @@ public class UIManager : MonoBehaviour
                     p2AvatarImage.rectTransform.localScale = new Vector3(-1f, 1f, 1f);
                 }
             }
-            
+
             if (p2Role.currentRole == Role.Hero)
             {
                 UpdatePointsUI(p2PointBases, p2PointMarkers, catchPointSprite, catchMarkerSprite, heroPts);
@@ -165,7 +170,7 @@ public class UIManager : MonoBehaviour
             p2ItemIconImage.enabled = p2Inventory.hasItem;
         }
     }
-    
+
     private void UpdatePointsUI(Image[] bases, Image[] markers, Sprite baseSprite, Sprite markerSprite, int earnedPoints)
     {
         for (int i = 0; i < bases.Length; i++)
@@ -179,12 +184,11 @@ public class UIManager : MonoBehaviour
             if (markers[i] != null)
             {
                 markers[i].sprite = markerSprite;
-                
                 markers[i].enabled = (i < earnedPoints);
             }
         }
     }
-    
+
     public void StartCountdown()
     {
         if (countdownImage == null || countdownSprites == null || countdownSprites.Length == 0)
@@ -203,7 +207,7 @@ public class UIManager : MonoBehaviour
         for (int i = 0; i < countdownSprites.Length; i++)
         {
             countdownImage.sprite = countdownSprites[i];
-            
+
             float elapsed = 0f;
             float popDuration = 0.15f; 
             
@@ -216,12 +220,45 @@ public class UIManager : MonoBehaviour
             }
 
             countdownImage.rectTransform.localScale = Vector3.one;
-            
             yield return new WaitForSeconds(1f - popDuration);
         }
 
         countdownImage.gameObject.SetActive(false);
-        
         GameManager.instance.BeginRoundAfterCountdown();
+    }
+
+    public void ShowVictoryScreen(Role winner)
+    {
+        if (victoryPanel == null || victoryTitleImage == null) return;
+
+        if (winner == Role.Hero)
+        {
+            victoryTitleImage.sprite = knightWinScreen;
+        }
+        else
+        {
+            victoryTitleImage.sprite = flagWinScreen;
+        }
+
+        victoryPanel.SetActive(true);
+        Time.timeScale = 0f;
+    }
+
+    public void OnRestartButtonPressed()
+    {
+        Time.timeScale = 1f;
+        victoryPanel.SetActive(false);
+        GameManager.instance.RestartMatch();
+    }
+
+    public void OnMainMenuButtonPressed()
+    {
+        Time.timeScale = 1f;
+        if (GameManager.instance != null)
+        {
+            Destroy(GameManager.instance.gameObject);
+        }
+        Destroy(transform.root.gameObject);
+        SceneManager.LoadScene("MainMenu");
     }
 }
