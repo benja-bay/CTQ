@@ -56,13 +56,10 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        // Si la ronda está corriendo, descontamos tiempo
         if (isRoundActive)
         {
             remainingTime -= Time.deltaTime;
-
-            // Opcional: Aquí podrías actualizar un texto en la pantalla con el tiempo
-            // Debug.Log("Remaining time: " + Mathf.CeilToInt(remainingTime));
+            
 
             if (remainingTime <= 0)
             {
@@ -76,16 +73,14 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.sceneLoaded -= OnMapLoaded;
     }
-
-    // --- LÓGICA DE PARTIDA Y MAPAS ---
+    
     void GenerateNewMatch()
     {
         selectedMaps.Clear();
         currentRoundIndex = 0;
 
         List<int> availableMaps = new List<int>(mapPool);
-
-        // Llenamos la lista con mapas aleatorios sin repetir
+        
         for (int i = 0; i < mapsPerMatch; i++)
         {
             if (availableMaps.Count == 0) break;
@@ -101,10 +96,14 @@ public class GameManager : MonoBehaviour
     {
         FindElementsInMap();
         SpawnAndAssignRoles();
-
-        // Al iniciar el mapa, reseteamos el reloj y activamos la ronda
-        remainingTime = survivalTime;
-        isRoundActive = true;
+        
+        if (player1 != null && player1.TryGetComponent<PlayerMovement>(out var pm1)) pm1.canMove = false;
+        if (player2 != null && player2.TryGetComponent<PlayerMovement>(out var pm2)) pm2.canMove = false;
+        
+        if (UIManager.instance != null)
+        {
+            UIManager.instance.StartCountdown();
+        }
     }
 
     void FindElementsInMap()
@@ -131,10 +130,17 @@ public class GameManager : MonoBehaviour
         if (player1.TryGetComponent<Rigidbody2D>(out var rb1)) rb1.linearVelocity = Vector2.zero;
         if (player2.TryGetComponent<Rigidbody2D>(out var rb2)) rb2.linearVelocity = Vector2.zero;
     }
+    
+    public void BeginRoundAfterCountdown()
+    {
+        if (player1 != null && player1.TryGetComponent<PlayerMovement>(out var pm1)) pm1.canMove = true;
+        if (player2 != null && player2.TryGetComponent<PlayerMovement>(out var pm2)) pm2.canMove = true;
+        
+        remainingTime = survivalTime;
+        isRoundActive = true;
+    }
 
     // --- CONDICIONES DE VICTORIA DE RONDA ---
-
-    // ACCIÓN: El héroe atrapa al banderín
     public void HeroCatchesBanner()
     {
         if (!isRoundActive) return; // Evita doble activación
@@ -145,8 +151,7 @@ public class GameManager : MonoBehaviour
 
         CheckMatchWinner();
     }
-
-    // ACCIÓN: El tiempo se terminó y el banderín sigue vivo
+    
     void BannerSurvived()
     {
         bannerPoints++;
@@ -157,19 +162,16 @@ public class GameManager : MonoBehaviour
 
     void CheckMatchWinner()
     {
-        // 1. ¿El Héroe llegó a los 3 puntos?
         if (heroPoints >= pointsToWinMatch)
         {
             Debug.Log("Hero won the match! Swapping roles for the next match.");
             EndMatch();
         }
-        // 2. ¿El Banderín llegó a los 3 puntos?
         else if (bannerPoints >= pointsToWinMatch)
         {
             Debug.Log("Banner won the match! Swapping roles for the next match.");
             EndMatch();
         }
-        // 3. Nadie ganó todavía, pasamos al siguiente mapa aleatorio
         else
         {
             AdvanceToNextMap();
@@ -178,15 +180,12 @@ public class GameManager : MonoBehaviour
 
     void EndMatch()
     {
-        // Reseteamos los puntos de la partida
         heroPoints = 0;
         bannerPoints = 0;
-
-        // Invertimos los roles de los jugadores para el siguiente match completo
+        
         player1Role = (player1Role == Role.Hero) ? Role.Banner : Role.Hero;
         player2Role = (player2Role == Role.Hero) ? Role.Banner : Role.Hero;
-
-        // Barajamos un nuevo set de mapas aleatorios
+        
         GenerateNewMatch();
         LoadSelectedMap();
     }
@@ -195,7 +194,6 @@ public class GameManager : MonoBehaviour
     {
         currentRoundIndex++;
         
-        // Si por alguna razón nos quedamos sin mapas en la lista de 3 elegidos, volvemos a mezclar
         if (currentRoundIndex >= selectedMaps.Count)
         {
             GenerateNewMatch();
@@ -208,8 +206,7 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.LoadScene(selectedMaps[currentRoundIndex]);
     }
-
-    // Función pública para que la UI o tú puedas consultar el tiempo de forma limpia
+    
     public float GetRemainingTime()
     {
         return Mathf.Max(0, remainingTime);

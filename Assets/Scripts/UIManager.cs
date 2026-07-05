@@ -2,10 +2,15 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement; 
+using System.Collections;
 
 public class UIManager : MonoBehaviour
 {
     public static UIManager instance;
+    
+    [Header("Countdown UI")]
+    public Image countdownImage;
+    public Sprite[] countdownSprites;
 
     [Header("Textos")]
     public TextMeshProUGUI timeText;
@@ -15,24 +20,23 @@ public class UIManager : MonoBehaviour
     public Sprite bannerSprite;
 
     [Header("Sprites de Puntos")]
-    public Sprite catchPointSprite;   // La banderita roja
-    public Sprite catchMarkerSprite;  // La X roja (Tachado)
-    public Sprite escapePointSprite;  // El tipito corriendo
-    public Sprite escapeMarkerSprite; // El tilde verde (Check)
+    public Sprite catchPointSprite;
+    public Sprite catchMarkerSprite;
+    public Sprite escapePointSprite;
+    public Sprite escapeMarkerSprite;
 
     [Header("UI Player 1 (Izquierda)")]
     public Image p1AvatarImage;
     public Image p1ItemIconImage;
-    public Image[] p1PointBases;      // Los 3 cuadraditos de fondo del P1
-    public Image[] p1PointMarkers;    // Las 3 cruces o tildes del P1
+    public Image[] p1PointBases;
+    public Image[] p1PointMarkers;
 
     [Header("UI Player 2 (Derecha)")]
     public Image p2AvatarImage;
     public Image p2ItemIconImage;
-    public Image[] p2PointBases;      // Los 3 cuadraditos de fondo del P2
-    public Image[] p2PointMarkers;    // Las 3 cruces o tildes del P2
-
-    // Variables internas
+    public Image[] p2PointBases;
+    public Image[] p2PointMarkers;
+    
     private PlayerInventory p1Inventory;
     private PlayerRole p1Role;
     private PlayerInventory p2Inventory;
@@ -88,22 +92,16 @@ public class UIManager : MonoBehaviour
     void Update()
     {
         if (GameManager.instance == null) return;
-
-        // ==========================================
-        // RELOJ
-        // ==========================================
+        
         float time = GameManager.instance.GetRemainingTime();
         if (timeText != null) timeText.text = Mathf.CeilToInt(time).ToString();
 
         int heroPts = GameManager.instance.GetHeroPoints();
         int bannerPts = GameManager.instance.GetBannerPoints();
-
-        // ==========================================
-        // ACTUALIZACIÓN JUGADOR 1 (IZQUIERDA)
-        // ==========================================
+        
+        // JUGADOR 1 (IZQUIERDA)
         if (p1Role != null)
         {
-            // Avatares
             if (p1AvatarImage != null)
             {
                 if (p1Role.currentRole == Role.Hero)
@@ -117,8 +115,7 @@ public class UIManager : MonoBehaviour
                     p1AvatarImage.rectTransform.localScale = new Vector3(-1f, 1f, 1f);
                 }
             }
-
-            // Sistema de Puntos P1
+            
             if (p1Role.currentRole == Role.Hero)
             {
                 UpdatePointsUI(p1PointBases, p1PointMarkers, catchPointSprite, catchMarkerSprite, heroPts);
@@ -134,13 +131,10 @@ public class UIManager : MonoBehaviour
             p1ItemIconImage.sprite = p1Inventory.hasItem ? p1Inventory.currentItemData.itemIcon : null;
             p1ItemIconImage.enabled = p1Inventory.hasItem;
         }
-
-        // ==========================================
-        // ACTUALIZACIÓN JUGADOR 2 (DERECHA)
-        // ==========================================
+        
+        // JUGADOR 2 (DERECHA)
         if (p2Role != null)
         {
-            // Avatares
             if (p2AvatarImage != null)
             {
                 if (p2Role.currentRole == Role.Banner)
@@ -154,8 +148,7 @@ public class UIManager : MonoBehaviour
                     p2AvatarImage.rectTransform.localScale = new Vector3(-1f, 1f, 1f);
                 }
             }
-
-            // Sistema de Puntos P2
+            
             if (p2Role.currentRole == Role.Hero)
             {
                 UpdatePointsUI(p2PointBases, p2PointMarkers, catchPointSprite, catchMarkerSprite, heroPts);
@@ -172,27 +165,63 @@ public class UIManager : MonoBehaviour
             p2ItemIconImage.enabled = p2Inventory.hasItem;
         }
     }
-
-    // Función auxiliar para actualizar las imágenes de los puntos fácilmente
+    
     private void UpdatePointsUI(Image[] bases, Image[] markers, Sprite baseSprite, Sprite markerSprite, int earnedPoints)
     {
         for (int i = 0; i < bases.Length; i++)
         {
             if (bases[i] != null) 
             {
-                // Mostramos el ícono base en el Horizontal Layout de atrás
                 bases[i].sprite = baseSprite;
                 bases[i].color = Color.white; 
             }
 
             if (markers[i] != null)
             {
-                // Asignamos la marca en el Horizontal Layout de adelante
                 markers[i].sprite = markerSprite;
                 
-                // Prendemos la imagen de tachado solo si ya ganaron este punto
                 markers[i].enabled = (i < earnedPoints);
             }
         }
+    }
+    
+    public void StartCountdown()
+    {
+        if (countdownImage == null || countdownSprites == null || countdownSprites.Length == 0)
+        {
+            GameManager.instance.BeginRoundAfterCountdown();
+            return;
+        }
+        
+        StartCoroutine(CountdownRoutine());
+    }
+
+    private IEnumerator CountdownRoutine()
+    {
+        countdownImage.gameObject.SetActive(true);
+
+        for (int i = 0; i < countdownSprites.Length; i++)
+        {
+            countdownImage.sprite = countdownSprites[i];
+            
+            float elapsed = 0f;
+            float popDuration = 0.15f; 
+            
+            while (elapsed < popDuration)
+            {
+                elapsed += Time.deltaTime;
+                float t = elapsed / popDuration;
+                countdownImage.rectTransform.localScale = Vector3.Lerp(Vector3.one * 1.5f, Vector3.one, t);
+                yield return null; 
+            }
+
+            countdownImage.rectTransform.localScale = Vector3.one;
+            
+            yield return new WaitForSeconds(1f - popDuration);
+        }
+
+        countdownImage.gameObject.SetActive(false);
+        
+        GameManager.instance.BeginRoundAfterCountdown();
     }
 }
