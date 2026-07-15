@@ -50,14 +50,18 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         playerInput = GetComponent<PlayerInput>();
         playerInput.neverAutoSwitchControlSchemes = true; 
-
-        var gamepads = Gamepad.all;
+        
+        string desiredScheme = "Keyboard"; 
+        
+        playerInput.user.UnpairDevices();
 
         if (gameObject.name == "Player1")
         {
-            if (gamepads.Count > 0)
+            desiredScheme = GameManager.instance != null ? GameManager.instance.p1ControlScheme : "Keyboard_P1";
+            
+            if (desiredScheme == "Gamepad" && Gamepad.all.Count > 0)
             {
-                playerInput.SwitchCurrentControlScheme("Gamepad", gamepads[0]);
+                playerInput.SwitchCurrentControlScheme("Gamepad", Gamepad.all[0]);
             }
             else
             {
@@ -66,9 +70,18 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (gameObject.name == "Player2")
         {
-            if (gamepads.Count > 1)
+            desiredScheme = GameManager.instance != null ? GameManager.instance.p2ControlScheme : "Keyboard_P2";
+            
+            if (desiredScheme == "Gamepad")
             {
-                playerInput.SwitchCurrentControlScheme("Gamepad", gamepads[1]);
+                if (Gamepad.all.Count > 1) 
+                {
+                    playerInput.SwitchCurrentControlScheme("Gamepad", Gamepad.all[1]);
+                }
+                else if (Gamepad.all.Count == 1) 
+                {
+                    playerInput.SwitchCurrentControlScheme("Gamepad", Gamepad.all[0]);
+                }
             }
             else
             {

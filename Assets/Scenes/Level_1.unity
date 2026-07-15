@@ -22767,18 +22767,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1306687435010543999, guid: 0b0ebe0021c91064887e795e4cdb7258, type: 3}
-      propertyPath: survivalTime
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 1306687435010543999, guid: 0b0ebe0021c91064887e795e4cdb7258, type: 3}
-      propertyPath: mapPool.Array.size
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 1306687435010543999, guid: 0b0ebe0021c91064887e795e4cdb7258, type: 3}
-      propertyPath: 'mapPool.Array.data[2]'
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 1852786456785034910, guid: 0b0ebe0021c91064887e795e4cdb7258, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.26755

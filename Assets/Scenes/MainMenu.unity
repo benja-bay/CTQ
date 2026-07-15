@@ -526,7 +526,7 @@ MonoBehaviour:
   mainPanel: {fileID: 1010035194}
   optionsPanel: {fileID: 919994562}
   creditsPanel: {fileID: 537198306}
-  startingSceneName: Level_1
+  startingSceneName: Lobby
 --- !u!1 &467911934
 GameObject:
   m_ObjectHideFlags: 0

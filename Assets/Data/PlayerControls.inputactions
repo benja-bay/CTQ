@@ -144,7 +144,7 @@
                 {
                     "name": "",
                     "id": "79d24699-908c-4758-bac0-9dacbb39582e",
-                    "path": "<Keyboard>/v",
+                    "path": "<Keyboard>/c",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard_P1",
@@ -155,7 +155,7 @@
                 {
                     "name": "",
                     "id": "8ad3252e-9354-4801-95f3-04dd73c1979d",
-                    "path": "<Keyboard>/comma",
+                    "path": "<Keyboard>/j",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard_P2",
@@ -188,7 +188,7 @@
                 {
                     "name": "",
                     "id": "f1a3f8bf-b2b5-44f0-8ee3-352cd0d5c3b4",
-                    "path": "<Keyboard>/b",
+                    "path": "<Keyboard>/v",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard_P1",
@@ -199,7 +199,7 @@
                 {
                     "name": "",
                     "id": "cc4248e9-a46b-4406-8e89-0131d02f9a34",
-                    "path": "<Keyboard>/period",
+                    "path": "<Keyboard>/k",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard_P2",

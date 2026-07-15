@@ -9,6 +9,9 @@ public class GameManager : MonoBehaviour
     [Header("Configuración de Mapas")]
     public List<int> mapPool; 
     public int mapsPerMatch = 3;
+    [Header("Configuración de Controles (Lobby)")]
+    public string p1ControlScheme = "Keyboard_P1";
+    public string p2ControlScheme = "Keyboard_P2";
     private List<int> selectedMaps = new List<int>();
     private int currentRoundIndex = 0;
 
@@ -47,16 +50,8 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        if (Random.value > 0.5f)
-        {
-            player1Role = Role.Banner;
-            player2Role = Role.Hero;
-        }
-        else
-        {
-            player1Role = Role.Hero;
-            player2Role = Role.Banner;
-        }
+        player1Role = Role.Hero;
+        player2Role = Role.Banner;
 
         if (selectedMaps.Count == 0)
         {
@@ -101,6 +96,8 @@ public class GameManager : MonoBehaviour
 
     void OnMapLoaded(Scene scene, LoadSceneMode mode)
     {
+        if (scene.name == "MainMenu" || scene.name == "Lobby") return;
+
         FindElementsInMap();
         SpawnAndAssignRoles();
         
