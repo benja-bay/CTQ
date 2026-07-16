@@ -16,6 +16,11 @@ public class PlayerInventory : MonoBehaviour
 
     private PlayerMovement playerMovement;
     private Rigidbody2D rb;
+    
+    [Header("Sonidos de Habilidades")]
+    public AudioClip dashSound;
+    public AudioClip speedPotionSound;
+    public AudioClip placeTrapSound;
 
     // --- VARIABLES DEL INPUT SYSTEM ---
     private PlayerInput playerInput;
@@ -76,13 +81,18 @@ public class PlayerInventory : MonoBehaviour
         switch (currentItemData.itemType)
         {
             case ItemType.Dash:
+                if (dashSound != null && AudioManager.instance != null) AudioManager.instance.PlaySFX(dashSound);
                 StartCoroutine(ExecuteDashRoutine());
                 break;
             case ItemType.SpeedPotion:
+                if (speedPotionSound != null && AudioManager.instance != null) AudioManager.instance.PlaySFX(speedPotionSound);
                 StartCoroutine(ExecuteSpeedPotionRoutine());
                 break;
             case ItemType.Cobweb:
             case ItemType.Decoy:
+                if (placeTrapSound != null && AudioManager.instance != null) AudioManager.instance.PlaySFX(placeTrapSound);
+                SpawnItemPrefab();
+                break;
             case ItemType.StunProjectile:
             case ItemType.Hook:
                 SpawnItemPrefab();

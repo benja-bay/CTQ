@@ -320,3 +320,5 @@ MonoBehaviour:
   head: {fileID: 893722165221772113}
   ropeRenderer: {fileID: 8129931852948131035}
   bannerDragDistance: 1
+  throwSound: {fileID: 8300000, guid: a5d9a160425b49a46929b3d0f4b89916, type: 3}
+  pullSound: {fileID: 8300000, guid: b7bc6df4abc21a443a0119a18914304c, type: 3}

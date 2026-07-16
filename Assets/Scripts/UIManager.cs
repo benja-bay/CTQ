@@ -208,6 +208,13 @@ public class UIManager : MonoBehaviour
         {
             countdownImage.sprite = countdownSprites[i];
 
+            // Elegir sonido: el último sprite es "GO", los demás son números
+            if (AudioManager.instance != null)
+            {
+                if (i == countdownSprites.Length - 1) AudioManager.instance.PlaySFX(AudioManager.instance.countdownGo);
+                else AudioManager.instance.PlaySFX(AudioManager.instance.countdownBeep);
+            }
+
             float elapsed = 0f;
             float popDuration = 0.15f; 
             

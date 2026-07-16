@@ -132,7 +132,7 @@ PolygonCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.24, y: 0.11}
+    oldSize: {x: 0.75, y: 0.34375}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -156,6 +156,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 872dca98f8124a47be5c1ac3803b91e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HomingProjectile
+  shootSound: {fileID: 8300000, guid: 5903c01d9991c994eb2bab81c1d672a2, type: 3}
+  impactSound: {fileID: 8300000, guid: 0452fb93ba8648841a3cbebe6163aa7c, type: 3}
 --- !u!50 &3038708197077307921
 Rigidbody2D:
   serializedVersion: 5

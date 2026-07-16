@@ -5,6 +5,9 @@ public class DecoyOrb : MonoBehaviour
 {
     private float stunDuration;
     private float knockbackForce;
+    
+    [Header("Sonidos")]
+    public AudioClip explosionSound;
 
     // El inventario llama a este método al poner la trampa
     public void Initialize(ItemData data)
@@ -15,9 +18,13 @@ public class DecoyOrb : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // Si lo toca el Héroe, explota
         if (other.CompareTag("Hero"))
         {
+            if (explosionSound != null && AudioManager.instance != null) 
+            {
+                AudioManager.instance.PlaySFX(explosionSound);
+            }
+
             PlayerMovement heroMovement = other.GetComponent<PlayerMovement>();
             if (heroMovement != null)
             {

@@ -9,6 +9,16 @@ public class PlayerRole : MonoBehaviour
     [Header("Visuales (Hijos)")]
     public GameObject heroVisuals;
     public GameObject flagVisuals;
+
+    [Header("Sonidos del Héroe")]
+    public AudioClip heroJumpSound;
+    public AudioClip[] heroFallSounds;
+    public AudioClip[] heroWalkSounds;
+
+    [Header("Sonidos del Banderín")]
+    public AudioClip bannerJumpSound;
+    public AudioClip[] bannerFallSounds;
+    public AudioClip[] bannerWalkSounds;
     
     private PlayerMovement movement;
 
@@ -27,6 +37,10 @@ public class PlayerRole : MonoBehaviour
             gameObject.tag = "Hero";
             movement.moveSpeed = 8f;
             
+            movement.jumpSound = heroJumpSound;
+            movement.fallSounds = heroFallSounds;
+            movement.walkSounds = heroWalkSounds;
+            
             // Prendemos al Héroe y apagamos al Banderín
             if (heroVisuals != null) heroVisuals.SetActive(true);
             if (flagVisuals != null) flagVisuals.SetActive(false);
@@ -35,6 +49,10 @@ public class PlayerRole : MonoBehaviour
         {
             gameObject.tag = "Banner";
             movement.moveSpeed = 9f; // El banderín es un poco más rápido por defecto
+            
+            movement.jumpSound = bannerJumpSound;
+            movement.fallSounds = bannerFallSounds;
+            movement.walkSounds = bannerWalkSounds;
             
             // Prendemos al Banderín y apagamos al Héroe
             if (heroVisuals != null) heroVisuals.SetActive(false);

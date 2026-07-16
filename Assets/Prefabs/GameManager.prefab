@@ -52,3 +52,4 @@ MonoBehaviour:
   pointsToWinMatch: 3
   player1Role: 0
   player2Role: 1
+  timeWarningThreshold: 3

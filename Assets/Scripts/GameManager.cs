@@ -28,6 +28,10 @@ public class GameManager : MonoBehaviour
     [Header("Roles Actuales")]
     public Role player1Role = Role.Hero;
     public Role player2Role = Role.Banner;
+    
+    [Header("Configuración de Sonido")]
+    public float timeWarningThreshold = 10f;
+    private bool isTimeWarningPlaying = false;
 
     private PlayerRole player1;
     private PlayerRole player2;
@@ -52,11 +56,10 @@ public class GameManager : MonoBehaviour
     {
         player1Role = Role.Hero;
         player2Role = Role.Banner;
+        
+        if (AudioManager.instance != null) AudioManager.instance.PlayMusic(AudioManager.instance.gameMusic);
 
-        if (selectedMaps.Count == 0)
-        {
-            GenerateNewMatch();
-        }
+        if (selectedMaps.Count == 0) GenerateNewMatch();
     }
 
     void Update()
@@ -64,6 +67,12 @@ public class GameManager : MonoBehaviour
         if (isRoundActive)
         {
             remainingTime -= Time.deltaTime;
+            
+            if (remainingTime <= timeWarningThreshold && !isTimeWarningPlaying)
+            {
+                if (AudioManager.instance != null) AudioManager.instance.StartTimeWarning();
+                isTimeWarningPlaying = true;
+            }
             
             if (remainingTime <= 0)
             {
@@ -158,19 +167,21 @@ public class GameManager : MonoBehaviour
         
         remainingTime = survivalTime;
         isRoundActive = true;
+        isTimeWarningPlaying = false;
     }
 
     public void HeroCatchesBanner()
     {
         if (!isRoundActive) return; 
         isRoundActive = false;
-
+        if (AudioManager.instance != null) AudioManager.instance.StopTimeWarning();
         heroPoints++;
         CheckMatchWinner();
     }
     
     void BannerSurvived()
     {
+        if (AudioManager.instance != null) AudioManager.instance.StopTimeWarning();
         bannerPoints++;
         CheckMatchWinner();
     }

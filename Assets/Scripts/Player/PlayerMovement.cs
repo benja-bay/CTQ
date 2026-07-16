@@ -27,6 +27,16 @@ public class PlayerMovement : MonoBehaviour
     public float groundCheckRadius = 0.2f;
     public LayerMask groundLayer;
     
+    [Header("Sonidos de Movimiento")]
+    public AudioSource audioSource;
+    public AudioSource walkAudioSource;
+    public AudioClip jumpSound;
+    public AudioClip[] fallSounds;
+    public AudioClip[] walkSounds;
+    public float stepInterval = 0.3f;
+    private float stepTimer;
+    private bool wasGrounded;
+
     public float facingDirection { get; private set; } = 1f; 
     public bool canMove = true;
     public bool isDashing = false; 
@@ -98,6 +108,13 @@ public class PlayerMovement : MonoBehaviour
     {
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
         
+        if (!wasGrounded && isGrounded)
+        {
+            if (fallSounds.Length > 0 && audioSource != null)
+                audioSource.PlayOneShot(fallSounds[Random.Range(0, fallSounds.Length)]);
+        }
+        wasGrounded = isGrounded;
+
         if (isGrounded)
         {
             coyoteTimeCounter = coyoteTime;
@@ -121,6 +138,9 @@ public class PlayerMovement : MonoBehaviour
             horizontalInput = 0f;
             isFastFalling = false;
             isHoldingJump = false;
+            stepTimer = 0f; 
+            
+            if (walkAudioSource != null && walkAudioSource.isPlaying) walkAudioSource.Stop();
             
             UpdateAnimator(0f);
             return;
@@ -135,10 +155,41 @@ public class PlayerMovement : MonoBehaviour
             FlipActiveVisuals(facingDirection); 
         }
         
+        if (isGrounded && horizontalInput != 0)
+        {
+            stepTimer -= Time.deltaTime;
+            if (stepTimer <= 0f)
+            {
+                stepTimer = stepInterval;
+                if (walkSounds.Length > 0)
+                {
+                    if (walkAudioSource != null)
+                    {
+                        walkAudioSource.clip = walkSounds[Random.Range(0, walkSounds.Length)];
+                        walkAudioSource.Play();
+                    }
+                    else if (audioSource != null) 
+                    {
+                        audioSource.PlayOneShot(walkSounds[Random.Range(0, walkSounds.Length)]);
+                    }
+                }
+            }
+        }
+        else
+        {
+            stepTimer = 0f; 
+            if (walkAudioSource != null && walkAudioSource.isPlaying)
+            {
+                walkAudioSource.Stop();
+            }
+        }
+        
         if (jumpBufferCounter > 0f && coyoteTimeCounter > 0f)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
             
+            if (jumpSound != null && audioSource != null) audioSource.PlayOneShot(jumpSound);
+
             jumpBufferCounter = 0f;
             coyoteTimeCounter = 0f;
         }

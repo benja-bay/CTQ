@@ -6,6 +6,9 @@ public class CobwebTrap : MonoBehaviour
 {
     private float slowMultiplier;
     private float effectDuration;
+    
+    [Header("Sonidos")]
+    public AudioClip triggerSound;
 
     private SpriteRenderer spriteRenderer;
     private Collider2D col;
@@ -27,13 +30,11 @@ public class CobwebTrap : MonoBehaviour
     {
         if (other.CompareTag("Hero")) 
         {
+            if (triggerSound != null && AudioManager.instance != null) AudioManager.instance.PlaySFX(triggerSound);
+
             PlayerMovement heroMovement = other.GetComponent<PlayerMovement>();
-            if (heroMovement != null)
-            {
-                StartCoroutine(ApplySlowdown(heroMovement));
-            }
+            if (heroMovement != null) StartCoroutine(ApplySlowdown(heroMovement));
         }
-        
     }
 
     private IEnumerator ApplySlowdown(PlayerMovement pm)

@@ -151,3 +151,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b50e99fa01474355b8258d021a951d46, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CobwebTrap
+  triggerSound: {fileID: 8300000, guid: 85630d3d752ef5548903c37755a49331, type: 3}

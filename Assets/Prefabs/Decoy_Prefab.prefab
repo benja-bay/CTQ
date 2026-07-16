@@ -141,3 +141,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 033d9d614cbf418195a600950487db87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DecoyOrb
+  explosionSound: {fileID: 8300000, guid: 2b99997ef51c4104bb62d72b876f6c2d, type: 3}
