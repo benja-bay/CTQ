@@ -31764,10 +31764,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player2
       objectReference: {fileID: 0}
-    - target: {fileID: 7604709417666971896, guid: 2fdedabcaebd2834ca0bbab33d89e219, type: 3}
-      propertyPath: m_TagString
-      value: Banderin
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -32063,22 +32059,6 @@ PrefabInstance:
     - target: {fileID: 1279550485983870207, guid: 5aaa1ca9e5ec7ae4ab7547e204bc971f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6456209020937882974, guid: 5aaa1ca9e5ec7ae4ab7547e204bc971f, type: 3}
-      propertyPath: m_Pivot.x
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 6456209020937882974, guid: 5aaa1ca9e5ec7ae4ab7547e204bc971f, type: 3}
-      propertyPath: m_Pivot.y
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 6456209020937882974, guid: 5aaa1ca9e5ec7ae4ab7547e204bc971f, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -100
-      objectReference: {fileID: 0}
-    - target: {fileID: 6456209020937882974, guid: 5aaa1ca9e5ec7ae4ab7547e204bc971f, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 100
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

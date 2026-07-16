@@ -82,12 +82,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   moveSpeed: 8
-  jumpForce: 15
-  fastFallSpeed: 25
+  jumpForce: 12
+  fastFallSpeed: 10
   fallMultiplier: 2.5
   lowJumpMultiplier: 3.5
   coyoteTime: 0.15
-  jumpBufferTime: 0.2
+  jumpBufferTime: 0.15
   groundCheck: {fileID: 5186173040810756229}
   groundCheckRadius: 0.2
   groundLayer:
