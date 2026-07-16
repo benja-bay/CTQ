@@ -3044,7 +3044,7 @@ Transform:
   m_GameObject: {fileID: 574586878}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -5, z: -10}
+  m_LocalPosition: {x: 0, y: -5.5, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3139,6 +3139,7 @@ GameObject:
   - component: {fileID: 658653952}
   - component: {fileID: 658653955}
   - component: {fileID: 658653954}
+  - component: {fileID: 658653956}
   - component: {fileID: 658653953}
   m_Layer: 5
   m_Name: p2_gamepad_button
@@ -3261,6 +3262,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 658653951}
   m_CullTransparentMesh: 1
+--- !u!114 &658653956
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 658653951}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ba0e972d0114a2e9543fa38405fff16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonSound
 --- !u!1 &676146365
 GameObject:
   m_ObjectHideFlags: 0
@@ -3409,6 +3422,7 @@ GameObject:
   - component: {fileID: 677796391}
   - component: {fileID: 677796394}
   - component: {fileID: 677796393}
+  - component: {fileID: 677796395}
   - component: {fileID: 677796392}
   m_Layer: 5
   m_Name: p1_keyboard_button
@@ -3531,6 +3545,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 677796390}
   m_CullTransparentMesh: 1
+--- !u!114 &677796395
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 677796390}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ba0e972d0114a2e9543fa38405fff16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonSound
 --- !u!1 &688557504
 GameObject:
   m_ObjectHideFlags: 0
@@ -19673,6 +19699,7 @@ GameObject:
   - component: {fileID: 1370722143}
   - component: {fileID: 1370722146}
   - component: {fileID: 1370722145}
+  - component: {fileID: 1370722147}
   - component: {fileID: 1370722144}
   m_Layer: 5
   m_Name: play_button
@@ -19795,6 +19822,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1370722142}
   m_CullTransparentMesh: 1
+--- !u!114 &1370722147
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1370722142}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ba0e972d0114a2e9543fa38405fff16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonSound
 --- !u!1 &1430070263
 GameObject:
   m_ObjectHideFlags: 0
@@ -20397,6 +20436,7 @@ GameObject:
   - component: {fileID: 1744550849}
   - component: {fileID: 1744550852}
   - component: {fileID: 1744550851}
+  - component: {fileID: 1744550853}
   - component: {fileID: 1744550850}
   m_Layer: 5
   m_Name: p1_gamepad_button
@@ -20519,6 +20559,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1744550848}
   m_CullTransparentMesh: 1
+--- !u!114 &1744550853
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1744550848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ba0e972d0114a2e9543fa38405fff16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonSound
 --- !u!1 &1752711716
 GameObject:
   m_ObjectHideFlags: 0
@@ -20588,7 +20640,7 @@ Transform:
   m_GameObject: {fileID: 1752711716}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -5, z: -10}
+  m_LocalPosition: {x: 0, y: -5.5, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -21280,6 +21332,7 @@ GameObject:
   - component: {fileID: 1992110513}
   - component: {fileID: 1992110516}
   - component: {fileID: 1992110515}
+  - component: {fileID: 1992110517}
   - component: {fileID: 1992110514}
   m_Layer: 5
   m_Name: p2_keyboard_button
@@ -21402,6 +21455,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1992110512}
   m_CullTransparentMesh: 1
+--- !u!114 &1992110517
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1992110512}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ba0e972d0114a2e9543fa38405fff16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonSound
 --- !u!1 &1996623255
 GameObject:
   m_ObjectHideFlags: 0
@@ -21413,6 +21478,7 @@ GameObject:
   - component: {fileID: 1996623256}
   - component: {fileID: 1996623259}
   - component: {fileID: 1996623258}
+  - component: {fileID: 1996623260}
   - component: {fileID: 1996623257}
   m_Layer: 5
   m_Name: back_button
@@ -21535,6 +21601,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1996623255}
   m_CullTransparentMesh: 1
+--- !u!114 &1996623260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1996623255}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ba0e972d0114a2e9543fa38405fff16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonSound
 --- !u!1 &2002625620
 GameObject:
   m_ObjectHideFlags: 0
