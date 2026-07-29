@@ -63,16 +63,13 @@ public class VFX
 {
     [SerializeField] private ParticleSystem dust;
     [SerializeField] private ParticleSystem cobweb;
-    [SerializeField] private ParticleSystem speedUp;
 
     public ParticleSystem Dust => dust;
     public ParticleSystem Cobweb => cobweb;
-    public ParticleSystem SpeedUp => speedUp;
 
     public void DeactivateAllVFX()
     {
         if (dust != null) dust.Stop();
         if (cobweb != null) cobweb.Stop();
-        if (speedUp != null) speedUp.Stop();
     }
 }

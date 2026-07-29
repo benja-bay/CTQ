@@ -8,15 +8,16 @@ public class PlayerInventory : MonoBehaviour
 
     [Header("Estado del Inventario")]
     public bool hasItem = false;
-    public ItemData currentItemData; 
+    public ItemData currentItemData;
 
     [Header("Listas de Objetos (Loot Pools)")]
     public ItemData[] heroPool;
     public ItemData[] bannerPool;
 
     private PlayerMovement playerMovement;
+    private GhostTrail ghostTrail;
     private Rigidbody2D rb;
-    
+
     [Header("Sonidos de Habilidades")]
     public AudioClip dashSound;
     public AudioClip speedPotionSound;
@@ -30,6 +31,7 @@ public class PlayerInventory : MonoBehaviour
     void Awake()
     {
         playerMovement = GetComponent<PlayerMovement>();
+        ghostTrail = GetComponent<GhostTrail>();
         rb = GetComponent<Rigidbody2D>();
         playerInput = GetComponent<PlayerInput>();
     }
@@ -116,7 +118,8 @@ public class PlayerInventory : MonoBehaviour
     {
         playerMovement.canMove = false;
         playerMovement.isDashing = true;
-        
+        ghostTrail.SetTrailActive(true);
+
         float originalGravity = rb.gravityScale;
         rb.gravityScale = 0f;
 
@@ -126,21 +129,24 @@ public class PlayerInventory : MonoBehaviour
 
         rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
         rb.gravityScale = originalGravity;
-        
+
         playerMovement.isDashing = false;
         playerMovement.canMove = true;
+        ghostTrail.SetTrailActive(false);
     }
 
     private IEnumerator ExecuteSpeedPotionRoutine()
     {
         float originalSpeed = playerMovement.moveSpeed;
-        
+        ghostTrail.SetTrailActive(true);
+
         playerMovement.moveSpeed *= currentItemData.mainPower;
 
         yield return new WaitForSeconds(currentItemData.effectDuration);
 
         PlayerRole role = GetComponent<PlayerRole>();
         playerMovement.moveSpeed = role.currentRole == Role.Hero ? 8f : 9f;
+        ghostTrail.SetTrailActive(false);
     }
 
     private void SpawnItemPrefab()
@@ -160,7 +166,7 @@ public class PlayerInventory : MonoBehaviour
             }
 
             GameObject spawnedItem = Instantiate(currentItemData.itemPrefab, spawnPos, Quaternion.identity);
-            
+
             CobwebTrap cobwebScript = spawnedItem.GetComponent<CobwebTrap>();
             if (cobwebScript != null) cobwebScript.Initialize(currentItemData);
 
@@ -169,7 +175,7 @@ public class PlayerInventory : MonoBehaviour
 
             GrapplingHook hookScript = spawnedItem.GetComponent<GrapplingHook>();
             if (hookScript != null) hookScript.Initialize(currentItemData, transform, playerMovement);
-            
+
             DecoyOrb decoyScript = spawnedItem.GetComponent<DecoyOrb>();
             if (decoyScript != null) decoyScript.Initialize(currentItemData);
         }

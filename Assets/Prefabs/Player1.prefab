@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2720001351274413146}
   - component: {fileID: 2726649080875625659}
   - component: {fileID: 5910757461839654265}
+  - component: {fileID: 2880657636289100828}
   - component: {fileID: 2657853975002613961}
   - component: {fileID: 7437719183812113689}
   - component: {fileID: 2771492465478632906}
@@ -152,6 +153,22 @@ MonoBehaviour:
     dust: {fileID: 0}
     cobweb: {fileID: 1382272934209313869}
     speedUp: {fileID: 0}
+--- !u!114 &2880657636289100828
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2176436381941793102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 976b4eb9c03b6b951acf0cfa7ee68b91, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GhostTrail
+  ghostLifetime: 0.5
+  spawnInterval: 0.04
+  ghostMaterial: {fileID: 2100000, guid: 0c0c85790799e9e5baa5dfccfd52fb45, type: 2}
+  ghostColor: {r: 0, g: 0.7, b: 1, a: 0.8}
 --- !u!114 &2657853975002613961
 MonoBehaviour:
   m_ObjectHideFlags: 0
