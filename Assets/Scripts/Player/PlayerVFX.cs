@@ -2,58 +2,29 @@ using UnityEngine;
 
 public class PlayerVFX : MonoBehaviour
 {
-    private PlayerRole playerRole;
-
-    [SerializeField] private bool isHero;
     public VFX vfx;
 
-    private void Awake()
-    {
-        playerRole = GetComponent<PlayerRole>();
-
-        if (playerRole == null)
-            Debug.LogError("PlayerRole component not found on the player object.");
-    }
-
-    private void OnEnable()
-    {
-        playerRole.OnRoleChanged += HandleRoleChanged;
-
-    }
-    private void OnDisable()
-    {
-        playerRole.OnRoleChanged -= HandleRoleChanged;
-    }
+    private bool _isVfxActive;
 
     private void Start()
     {
         vfx.DeactivateAllVFX();
     }
 
-    private void HandleRoleChanged(Role newRole)
-    {
-        if (newRole == Role.Hero)
-        {
-            isHero = true;
-        }
-        else if (newRole == Role.Banner)
-        {
-            isHero = false;
-        }
-    }
-
     public void ActivateVFX(ParticleSystem vfxToActivate)
     {
-        if (vfxToActivate != null)
+        if (vfxToActivate != null && !_isVfxActive)
         {
             vfxToActivate.Play();
+            _isVfxActive = true;
         }
     }
     public void DeactivateVFX(ParticleSystem vfxToDeactivate)
     {
-        if (vfxToDeactivate != null)
+        if (vfxToDeactivate != null && _isVfxActive)
         {
             vfxToDeactivate.Stop();
+            _isVfxActive = false;
         }
     }
 }

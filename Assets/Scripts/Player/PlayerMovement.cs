@@ -14,7 +14,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Ajustes de Better Jump")]
     public float fallMultiplier = 2.5f;
     public float lowJumpMultiplier = 3.5f;
-    
+
     [Header("Ajustes de Game Feel")]
     public float coyoteTime = 0.15f;
     private float coyoteTimeCounter;
@@ -26,7 +26,7 @@ public class PlayerMovement : MonoBehaviour
     public Transform groundCheck;
     public float groundCheckRadius = 0.2f;
     public LayerMask groundLayer;
-    
+
     [Header("Sonidos de Movimiento")]
     public AudioSource audioSource;
     public AudioSource walkAudioSource;
@@ -37,9 +37,9 @@ public class PlayerMovement : MonoBehaviour
     private float stepTimer;
     private bool wasGrounded;
 
-    public float facingDirection { get; private set; } = 1f; 
+    public float facingDirection { get; private set; } = 1f;
     public bool canMove = true;
-    public bool isDashing = false; 
+    public bool isDashing = false;
     public bool isKnockedBack = false;
     public bool isPreparing = false;
     public bool isCasting = false;
@@ -54,21 +54,23 @@ public class PlayerMovement : MonoBehaviour
     private InputAction moveAction;
     private InputAction jumpAction;
     private InputAction fastFallAction;
+    private PlayerVFX playerVFX;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         playerInput = GetComponent<PlayerInput>();
-        playerInput.neverAutoSwitchControlSchemes = true; 
-        
-        string desiredScheme = "Keyboard"; 
-        
+        playerVFX = GetComponent<PlayerVFX>();
+        playerInput.neverAutoSwitchControlSchemes = true;
+
+        string desiredScheme = "Keyboard";
+
         playerInput.user.UnpairDevices();
 
         if (gameObject.name == "Player1")
         {
             desiredScheme = GameManager.instance != null ? GameManager.instance.p1ControlScheme : "Keyboard_P1";
-            
+
             if (desiredScheme == "Gamepad" && Gamepad.all.Count > 0)
             {
                 playerInput.SwitchCurrentControlScheme("Gamepad", Gamepad.all[0]);
@@ -81,14 +83,14 @@ public class PlayerMovement : MonoBehaviour
         else if (gameObject.name == "Player2")
         {
             desiredScheme = GameManager.instance != null ? GameManager.instance.p2ControlScheme : "Keyboard_P2";
-            
+
             if (desiredScheme == "Gamepad")
             {
-                if (Gamepad.all.Count > 1) 
+                if (Gamepad.all.Count > 1)
                 {
                     playerInput.SwitchCurrentControlScheme("Gamepad", Gamepad.all[1]);
                 }
-                else if (Gamepad.all.Count == 1) 
+                else if (Gamepad.all.Count == 1)
                 {
                     playerInput.SwitchCurrentControlScheme("Gamepad", Gamepad.all[0]);
                 }
@@ -98,7 +100,7 @@ public class PlayerMovement : MonoBehaviour
                 playerInput.SwitchCurrentControlScheme("Keyboard_P2", Keyboard.current);
             }
         }
-        
+
         moveAction = playerInput.actions["Move"];
         jumpAction = playerInput.actions["Jump"];
         fastFallAction = playerInput.actions["FastFall"];
@@ -107,7 +109,7 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
-        
+
         if (!wasGrounded && isGrounded)
         {
             if (fallSounds.Length > 0 && audioSource != null)
@@ -123,7 +125,7 @@ public class PlayerMovement : MonoBehaviour
         {
             coyoteTimeCounter -= Time.deltaTime;
         }
-        
+
         if (jumpAction.WasPressedThisFrame())
         {
             jumpBufferCounter = jumpBufferTime;
@@ -138,10 +140,12 @@ public class PlayerMovement : MonoBehaviour
             horizontalInput = 0f;
             isFastFalling = false;
             isHoldingJump = false;
-            stepTimer = 0f; 
-            
+            stepTimer = 0f;
+
+            playerVFX.DeactivateVFX(playerVFX.vfx.Dust);
+
             if (walkAudioSource != null && walkAudioSource.isPlaying) walkAudioSource.Stop();
-            
+
             UpdateAnimator(0f);
             return;
         }
@@ -152,11 +156,14 @@ public class PlayerMovement : MonoBehaviour
         if (horizontalInput != 0)
         {
             facingDirection = Mathf.Sign(horizontalInput);
-            FlipActiveVisuals(facingDirection); 
+            FlipActiveVisuals(facingDirection);
         }
-        
-        if (isGrounded && horizontalInput != 0)
+
+        bool isMovingOnGround = isGrounded && Mathf.Abs(horizontalInput) > 0.01f;
+        if (isMovingOnGround)
         {
+            playerVFX.ActivateVFX(playerVFX.vfx.Dust);
+
             stepTimer -= Time.deltaTime;
             if (stepTimer <= 0f)
             {
@@ -168,7 +175,7 @@ public class PlayerMovement : MonoBehaviour
                         walkAudioSource.clip = walkSounds[Random.Range(0, walkSounds.Length)];
                         walkAudioSource.Play();
                     }
-                    else if (audioSource != null) 
+                    else if (audioSource != null)
                     {
                         audioSource.PlayOneShot(walkSounds[Random.Range(0, walkSounds.Length)]);
                     }
@@ -177,28 +184,30 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            stepTimer = 0f; 
+            playerVFX.DeactivateVFX(playerVFX.vfx.Dust);
+
+            stepTimer = 0f;
             if (walkAudioSource != null && walkAudioSource.isPlaying)
             {
                 walkAudioSource.Stop();
             }
         }
-        
+
         if (jumpBufferCounter > 0f && coyoteTimeCounter > 0f)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
-            
+
             if (jumpSound != null && audioSource != null) audioSource.PlayOneShot(jumpSound);
 
             jumpBufferCounter = 0f;
             coyoteTimeCounter = 0f;
         }
-        
+
         if (jumpAction.WasReleasedThisFrame() && rb.linearVelocity.y > 0f)
         {
             coyoteTimeCounter = 0f;
         }
-        
+
         isHoldingJump = jumpAction.IsInProgress();
         isFastFalling = (fastFallAction.IsInProgress() || moveInput.y < -0.5f) && !isGrounded;
 
@@ -217,7 +226,7 @@ public class PlayerMovement : MonoBehaviour
         {
             rb.linearVelocity = new Vector2(horizontalInput * moveSpeed, rb.linearVelocity.y);
         }
-        
+
         if (isFastFalling)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, -fastFallSpeed);
@@ -234,7 +243,7 @@ public class PlayerMovement : MonoBehaviour
 
     private Animator GetActiveAnimator()
     {
-        Animator[] animators = GetComponentsInChildren<Animator>(false); 
+        Animator[] animators = GetComponentsInChildren<Animator>(false);
         if (animators.Length > 0) return animators[0];
         return null;
     }
@@ -265,7 +274,7 @@ public class PlayerMovement : MonoBehaviour
     public void TriggerCastAnimation()
     {
         Animator activeAnim = GetActiveAnimator();
-        if (activeAnim != null) 
+        if (activeAnim != null)
         {
             activeAnim.SetTrigger("Cast");
         }
@@ -290,10 +299,10 @@ public class PlayerMovement : MonoBehaviour
 
     public void ApplyKnockback(Vector2 force)
     {
-        isKnockedBack = true; 
-        rb.linearVelocity = Vector2.zero; 
+        isKnockedBack = true;
+        rb.linearVelocity = Vector2.zero;
         rb.AddForce(force, ForceMode2D.Impulse);
-        Invoke(nameof(EndKnockback), 0.3f); 
+        Invoke(nameof(EndKnockback), 0.3f);
     }
 
     private void EndKnockback()
