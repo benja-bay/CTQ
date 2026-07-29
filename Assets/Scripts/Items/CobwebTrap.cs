@@ -6,7 +6,7 @@ public class CobwebTrap : MonoBehaviour
 {
     private float slowMultiplier;
     private float effectDuration;
-    
+
     [Header("Sonidos")]
     public AudioClip triggerSound;
 
@@ -22,32 +22,38 @@ public class CobwebTrap : MonoBehaviour
     public void Initialize(ItemData data)
     {
         effectDuration = data.effectDuration;
-        slowMultiplier = data.mainPower;     
-        
+        slowMultiplier = data.mainPower;
+
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Hero")) 
+        if (other.CompareTag("Hero"))
         {
+            PlayerVFX playerVFX = other.GetComponent<PlayerVFX>();
             if (triggerSound != null && AudioManager.instance != null) AudioManager.instance.PlaySFX(triggerSound);
 
             PlayerMovement heroMovement = other.GetComponent<PlayerMovement>();
-            if (heroMovement != null) StartCoroutine(ApplySlowdown(heroMovement));
+            if (heroMovement != null)
+            {
+                StartCoroutine(ApplySlowdown(heroMovement, playerVFX));
+            }
         }
     }
 
-    private IEnumerator ApplySlowdown(PlayerMovement pm)
+    private IEnumerator ApplySlowdown(PlayerMovement pm, PlayerVFX playerVFX)
     {
         spriteRenderer.enabled = false;
         col.enabled = false;
-        
+
         pm.moveSpeed = 8f * slowMultiplier;
+        playerVFX.ActivateVFX(playerVFX.vfx.Cobweb);
 
         yield return new WaitForSeconds(effectDuration);
-        
+
         pm.moveSpeed = 8f;
-        
+        playerVFX.DeactivateVFX(playerVFX.vfx.Cobweb);
+
         Destroy(gameObject);
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public enum Role { Hero, Banner }
@@ -5,7 +6,8 @@ public enum Role { Hero, Banner }
 public class PlayerRole : MonoBehaviour
 {
     public Role currentRole;
-    
+    public Action<Role> OnRoleChanged;
+
     [Header("Visuales (Hijos)")]
     public GameObject heroVisuals;
     public GameObject flagVisuals;
@@ -19,7 +21,7 @@ public class PlayerRole : MonoBehaviour
     public AudioClip bannerJumpSound;
     public AudioClip[] bannerFallSounds;
     public AudioClip[] bannerWalkSounds;
-    
+
     private PlayerMovement movement;
 
     void Awake()
@@ -31,16 +33,17 @@ public class PlayerRole : MonoBehaviour
     public void SetRole(Role newRole)
     {
         currentRole = newRole;
+        OnRoleChanged?.Invoke(currentRole);
 
         if (currentRole == Role.Hero)
         {
             gameObject.tag = "Hero";
             movement.moveSpeed = 8f;
-            
+
             movement.jumpSound = heroJumpSound;
             movement.fallSounds = heroFallSounds;
             movement.walkSounds = heroWalkSounds;
-            
+
             // Prendemos al Héroe y apagamos al Banderín
             if (heroVisuals != null) heroVisuals.SetActive(true);
             if (flagVisuals != null) flagVisuals.SetActive(false);
@@ -49,11 +52,11 @@ public class PlayerRole : MonoBehaviour
         {
             gameObject.tag = "Banner";
             movement.moveSpeed = 9f; // El banderín es un poco más rápido por defecto
-            
+
             movement.jumpSound = bannerJumpSound;
             movement.fallSounds = bannerFallSounds;
             movement.walkSounds = bannerWalkSounds;
-            
+
             // Prendemos al Banderín y apagamos al Héroe
             if (heroVisuals != null) heroVisuals.SetActive(false);
             if (flagVisuals != null) flagVisuals.SetActive(true);
