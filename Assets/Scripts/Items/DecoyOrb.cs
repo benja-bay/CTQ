@@ -5,9 +5,10 @@ public class DecoyOrb : MonoBehaviour
 {
     private float stunDuration;
     private float knockbackForce;
-    
-    [Header("Sonidos")]
+
+    [Header("Game feel")]
     public AudioClip explosionSound;
+    [SerializeField] private ParticleSystem explosionEffect;
 
     // El inventario llama a este método al poner la trampa
     public void Initialize(ItemData data)
@@ -16,14 +17,29 @@ public class DecoyOrb : MonoBehaviour
         knockbackForce = data.mainPower;
     }
 
+    private void Awake()
+    {
+        if (explosionEffect != null)
+        {
+            explosionEffect.Stop();
+        }
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Hero"))
         {
-            if (explosionSound != null && AudioManager.instance != null) 
+            if (explosionSound != null && AudioManager.instance != null)
             {
                 AudioManager.instance.PlaySFX(explosionSound);
             }
+
+            if (explosionEffect != null)
+            {
+                explosionEffect.transform.SetParent(null);
+                explosionEffect.Play();
+            }
+
 
             PlayerMovement heroMovement = other.GetComponent<PlayerMovement>();
             if (heroMovement != null)
@@ -31,17 +47,17 @@ public class DecoyOrb : MonoBehaviour
                 // Tomamos hacia dónde mira el Héroe y lo invertimos (para tirarlo hacia atrás)
                 float empujeX = -heroMovement.facingDirection;
                 // Le damos una fuerza fija hacia arriba
-                float empujeY = 1f; 
+                float empujeY = 1f;
                 // Creamos el vector diagonal y lo normalizamos
                 Vector2 knockbackDirection = new Vector2(empujeX, empujeY).normalized;
                 // Aplicamos la fuerza física multiplicada por nuestro mainPower
                 heroMovement.ApplyKnockback(knockbackDirection * knockbackForce);
                 // Aplicamos el Stun
                 heroMovement.ApplyStun(stunDuration);
-                
+
                 Debug.Log("¡El Héroe cayó en la trampa del señuelo y salió volando!");
             }
-            
+
             Destroy(gameObject);
         }
     }
