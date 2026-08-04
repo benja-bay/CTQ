@@ -16,6 +16,6 @@ MonoBehaviour:
   itemName: Hook
   itemIcon: {fileID: 21300000, guid: 2e3e2fe9111902a45b0720de0fbec1b6, type: 3}
   effectDuration: 0
-  mainPower: 25
-  secondaryPower: 5
+  mainPower: 35
+  secondaryPower: 8
   itemPrefab: {fileID: 6121037106404574852, guid: 02aefc32c5b902847aef5562b8e272aa, type: 3}
