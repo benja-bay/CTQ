@@ -274,8 +274,8 @@ GameObject:
   - component: {fileID: 9194169418473496821}
   - component: {fileID: 3489390767450388082}
   - component: {fileID: 5994420748002353035}
-  - component: {fileID: 2005503239778485428}
   - component: {fileID: 2090000401824679143}
+  - component: {fileID: 2005503239778485428}
   - component: {fileID: 8300181946472371778}
   - component: {fileID: 4999664906782855209}
   m_Layer: 0
@@ -451,36 +451,6 @@ MonoBehaviour:
   dashSound: {fileID: 8300000, guid: c3ccec2a7b149aa449d9ec6181f81d43, type: 3}
   speedPotionSound: {fileID: 8300000, guid: ce81dfe19eb22c54fbb9ce938099d1d0, type: 3}
   placeTrapSound: {fileID: 8300000, guid: bd971dc4c8a6a3e488d03ce742ba5af8, type: 3}
---- !u!114 &2005503239778485428
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7604709417666971896}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.PlayerInput
-  m_Actions: {fileID: -944628639613478452, guid: 20df86be8c204a2419adb0b8256e699a, type: 3}
-  m_NotificationBehavior: 0
-  m_UIInputModule: {fileID: 0}
-  m_DeviceLostEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_DeviceRegainedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ControlsChangedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ActionEvents: []
-  m_NeverAutoSwitchControlSchemes: 1
-  m_DefaultControlScheme: Keyboard_P2
-  m_DefaultActionMap: Player
-  m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
 --- !u!70 &2090000401824679143
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -518,6 +488,36 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0.18}
   m_Size: {x: 0.5, y: 1.3}
   m_Direction: 0
+--- !u!114 &2005503239778485428
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7604709417666971896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.PlayerInput
+  m_Actions: {fileID: -944628639613478452, guid: 20df86be8c204a2419adb0b8256e699a, type: 3}
+  m_NotificationBehavior: 0
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 1
+  m_DefaultControlScheme: Keyboard_P2
+  m_DefaultActionMap: Player
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
 --- !u!82 &8300181946472371778
 AudioSource:
   m_ObjectHideFlags: 0
