@@ -36,12 +36,16 @@ public class UIManager : MonoBehaviour
     public Image p1ItemIconImage;
     public Image[] p1PointBases;      
     public Image[] p1PointMarkers;    
+    public Image p1SpeedBarFill; 
+    public GameObject p1SpeedBarContainer; 
 
     [Header("UI Player 2 (Derecha)")]
     public Image p2AvatarImage;
     public Image p2ItemIconImage;
     public Image[] p2PointBases;      
     public Image[] p2PointMarkers;    
+    public Image p2SpeedBarFill; 
+    public GameObject p2SpeedBarContainer; 
 
     private PlayerInventory p1Inventory;
     private PlayerRole p1Role;
@@ -169,6 +173,38 @@ public class UIManager : MonoBehaviour
             p2ItemIconImage.sprite = p2Inventory.hasItem ? p2Inventory.currentItemData.itemIcon : null;
             p2ItemIconImage.enabled = p2Inventory.hasItem;
         }
+        
+        if (p1Inventory != null && p1SpeedBarFill != null && p1SpeedBarContainer != null)
+        {
+            if (p1Inventory.currentSpeedDuration > 0)
+            {
+                p1SpeedBarContainer.SetActive(true);
+                if (p1Inventory.maxSpeedDuration > 0) 
+                {
+                    p1SpeedBarFill.fillAmount = p1Inventory.currentSpeedDuration / p1Inventory.maxSpeedDuration;
+                }
+            }
+            else
+            {
+                p1SpeedBarContainer.SetActive(false);
+            }
+        }
+
+        if (p2Inventory != null && p2SpeedBarFill != null && p2SpeedBarContainer != null)
+        {
+            if (p2Inventory.currentSpeedDuration > 0)
+            {
+                p2SpeedBarContainer.SetActive(true);
+                if (p2Inventory.maxSpeedDuration > 0)
+                {
+                    p2SpeedBarFill.fillAmount = p2Inventory.currentSpeedDuration / p2Inventory.maxSpeedDuration;
+                }
+            }
+            else
+            {
+                p2SpeedBarContainer.SetActive(false);
+            }
+        }
     }
 
     private void UpdatePointsUI(Image[] bases, Image[] markers, Sprite baseSprite, Sprite markerSprite, int earnedPoints)
@@ -208,7 +244,6 @@ public class UIManager : MonoBehaviour
         {
             countdownImage.sprite = countdownSprites[i];
 
-            // Elegir sonido: el último sprite es "GO", los demás son números
             if (AudioManager.instance != null)
             {
                 if (i == countdownSprites.Length - 1) AudioManager.instance.PlaySFX(AudioManager.instance.countdownGo);

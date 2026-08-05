@@ -4,7 +4,6 @@ using System.Collections;
 [RequireComponent(typeof(Collider2D), typeof(SpriteRenderer))]
 public class CobwebTrap : MonoBehaviour
 {
-    private float slowMultiplier;
     private float effectDuration;
 
     [Header("Sonidos")]
@@ -21,9 +20,8 @@ public class CobwebTrap : MonoBehaviour
 
     public void Initialize(ItemData data)
     {
-        effectDuration = data.effectDuration;
-        slowMultiplier = data.mainPower;
-
+        // Usamos la duración del ScriptableObject
+        effectDuration = data.effectDuration; 
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -31,29 +29,34 @@ public class CobwebTrap : MonoBehaviour
         if (other.CompareTag("Hero"))
         {
             PlayerVFX playerVFX = other.GetComponent<PlayerVFX>();
-            if (triggerSound != null && AudioManager.instance != null) AudioManager.instance.PlaySFX(triggerSound);
-
+            
+            if (triggerSound != null && AudioManager.instance != null) 
+                AudioManager.instance.PlaySFX(triggerSound);
+                
             PlayerMovement heroMovement = other.GetComponent<PlayerMovement>();
+            
             if (heroMovement != null)
             {
-                StartCoroutine(ApplySlowdown(heroMovement, playerVFX));
+                StartCoroutine(ApplyConfusionTrap(heroMovement, playerVFX));
             }
         }
     }
 
-    private IEnumerator ApplySlowdown(PlayerMovement pm, PlayerVFX playerVFX)
+    private IEnumerator ApplyConfusionTrap(PlayerMovement pm, PlayerVFX playerVFX)
     {
+        // Escondemos la trampa del mapa
         spriteRenderer.enabled = false;
         col.enabled = false;
 
-        pm.moveSpeed = 8f * slowMultiplier;
+        // Disparamos el nuevo estado de confusión (reutilizable)
+        pm.ApplyConfusion(effectDuration);
+        
+        // Mantenemos el VFX de la telaraña como feedback adicional
         playerVFX.ActivateVFX(playerVFX.vfx.Cobweb);
 
         yield return new WaitForSeconds(effectDuration);
 
-        pm.moveSpeed = 8f;
         playerVFX.DeactivateVFX(playerVFX.vfx.Cobweb);
-
         Destroy(gameObject);
     }
 }

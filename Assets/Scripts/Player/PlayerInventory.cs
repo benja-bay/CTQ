@@ -5,10 +5,14 @@ using System.Collections;
 [RequireComponent(typeof(PlayerInput))]
 public class PlayerInventory : MonoBehaviour
 {
-
     [Header("Estado del Inventario")]
     public bool hasItem = false;
     public ItemData currentItemData;
+
+    [Header("Estado de Efectos")]
+    public float currentSpeedDuration { get; private set; }
+    public float maxSpeedDuration { get; private set; }
+    private Coroutine speedCoroutine;
 
     [Header("Listas de Objetos (Loot Pools)")]
     public ItemData[] heroPool;
@@ -59,7 +63,6 @@ public class PlayerInventory : MonoBehaviour
         }
 
         hasItem = true;
-        Debug.Log($"[{gameObject.name}] received item: {currentItemData.itemName}");
     }
 
     void Update()
@@ -71,15 +74,12 @@ public class PlayerInventory : MonoBehaviour
 
         if (discardItemAction != null && discardItemAction.WasPressedThisFrame() && hasItem)
         {
-            Debug.Log($"[{gameObject.name}] DISCARDED: {currentItemData.itemName}");
             ClearSlot();
         }
     }
 
     private void UseItem()
     {
-        Debug.Log($"[{gameObject.name}] USED: {currentItemData.itemName}");
-
         switch (currentItemData.itemType)
         {
             case ItemType.Dash:
@@ -88,7 +88,7 @@ public class PlayerInventory : MonoBehaviour
                 break;
             case ItemType.SpeedPotion:
                 if (speedPotionSound != null && AudioManager.instance != null) AudioManager.instance.PlaySFX(speedPotionSound);
-                StartCoroutine(ExecuteSpeedPotionRoutine());
+                ActivateSpeedPotion(currentItemData); 
                 break;
             case ItemType.Cobweb:
             case ItemType.Decoy:
@@ -110,43 +110,78 @@ public class PlayerInventory : MonoBehaviour
         currentItemData = null;
     }
 
-    // ==========================================
-    // LÓGICA DE ÍTEMS DIRECTOS Y PREFABS
-    // ==========================================
-
     private IEnumerator ExecuteDashRoutine()
     {
-        playerMovement.canMove = false;
-        playerMovement.isDashing = true;
-        ghostTrail.SetTrailActive(true);
+        if (playerMovement != null)
+        {
+            playerMovement.canMove = false;
+            playerMovement.isDashing = true;
+        }
+        
+        if (ghostTrail != null) ghostTrail.SetTrailActive(true);
 
-        float originalGravity = rb.gravityScale;
-        rb.gravityScale = 0f;
-
-        rb.linearVelocity = new Vector2(playerMovement.facingDirection * currentItemData.mainPower, 0f);
+        float originalGravity = 1f;
+        if (rb != null)
+        {
+            originalGravity = rb.gravityScale;
+            rb.gravityScale = 0f;
+            rb.linearVelocity = new Vector2(playerMovement.facingDirection * currentItemData.mainPower, 0f);
+        }
 
         yield return new WaitForSeconds(currentItemData.effectDuration);
 
-        rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
-        rb.gravityScale = originalGravity;
+        if (rb != null)
+        {
+            rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
+            rb.gravityScale = originalGravity;
+        }
 
-        playerMovement.isDashing = false;
-        playerMovement.canMove = true;
-        ghostTrail.SetTrailActive(false);
+        if (playerMovement != null)
+        {
+            playerMovement.isDashing = false;
+            playerMovement.canMove = true;
+        }
+        
+        if (ghostTrail != null) ghostTrail.SetTrailActive(false);
     }
 
-    private IEnumerator ExecuteSpeedPotionRoutine()
+    private void ActivateSpeedPotion(ItemData potionData)
     {
-        float originalSpeed = playerMovement.moveSpeed;
-        ghostTrail.SetTrailActive(true);
+        if (speedCoroutine != null)
+        {
+            StopCoroutine(speedCoroutine);
+        }
 
-        playerMovement.moveSpeed *= currentItemData.mainPower;
+        maxSpeedDuration = potionData.effectDuration;
+        currentSpeedDuration = maxSpeedDuration;
+        
+        speedCoroutine = StartCoroutine(SpeedPotionRoutine(potionData.mainPower));
+    }
 
-        yield return new WaitForSeconds(currentItemData.effectDuration);
-
+    private IEnumerator SpeedPotionRoutine(float speedMultiplier)
+    {
+        if (ghostTrail != null) ghostTrail.SetTrailActive(true);
+        
         PlayerRole role = GetComponent<PlayerRole>();
-        playerMovement.moveSpeed = role.currentRole == Role.Hero ? 8f : 9f;
-        ghostTrail.SetTrailActive(false);
+        float baseSpeed = 8f; 
+        if (role != null)
+        {
+            baseSpeed = role.currentRole == Role.Hero ? 8f : 9f;
+        }
+        
+        if (playerMovement != null) playerMovement.moveSpeed = baseSpeed * speedMultiplier;
+        
+        while (currentSpeedDuration > 0)
+        {
+            currentSpeedDuration -= Time.deltaTime;
+            yield return null;
+        }
+        
+        if (playerMovement != null) playerMovement.moveSpeed = baseSpeed;
+        if (ghostTrail != null) ghostTrail.SetTrailActive(false);
+        
+        currentSpeedDuration = 0f;
+        speedCoroutine = null; 
     }
 
     private void SpawnItemPrefab()

@@ -18,7 +18,6 @@ public class PlayerMovement : MonoBehaviour
     [Header("Ajustes de Game Feel")]
     public float coyoteTime = 0.15f;
     private float coyoteTimeCounter;
-
     public float jumpBufferTime = 0.2f;
     private float jumpBufferCounter;
 
@@ -27,12 +26,19 @@ public class PlayerMovement : MonoBehaviour
     public float groundCheckRadius = 0.2f;
     public LayerMask groundLayer;
 
+    [Header("Estado de Confusión")]
+    public Transform confusionIcon; 
+    public float confusionRotationSpeed = -360f; // Grados por segundo
+    public bool isConfused { get; private set; }
+    private Coroutine confusionCoroutine;
+
     [Header("Sonidos de Movimiento")]
     public AudioSource audioSource;
     public AudioSource walkAudioSource;
     public AudioClip jumpSound;
     public AudioClip[] fallSounds;
     public AudioClip[] walkSounds;
+
     public float stepInterval = 0.3f;
     private float stepTimer;
     private bool wasGrounded;
@@ -49,6 +55,9 @@ public class PlayerMovement : MonoBehaviour
     private bool isGrounded;
     private bool isFastFalling;
     private bool isHoldingJump;
+    
+    // Variable para trackear el stick en gamepads
+    private float previousMoveY;
 
     private PlayerInput playerInput;
     private InputAction moveAction;
@@ -61,16 +70,14 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         playerInput = GetComponent<PlayerInput>();
         playerVFX = GetComponent<PlayerVFX>();
+
         playerInput.neverAutoSwitchControlSchemes = true;
-
         string desiredScheme = "Keyboard";
-
         playerInput.user.UnpairDevices();
 
         if (gameObject.name == "Player1")
         {
             desiredScheme = GameManager.instance != null ? GameManager.instance.p1ControlScheme : "Keyboard_P1";
-
             if (desiredScheme == "Gamepad" && Gamepad.all.Count > 0)
             {
                 playerInput.SwitchCurrentControlScheme("Gamepad", Gamepad.all[0]);
@@ -83,7 +90,6 @@ public class PlayerMovement : MonoBehaviour
         else if (gameObject.name == "Player2")
         {
             desiredScheme = GameManager.instance != null ? GameManager.instance.p2ControlScheme : "Keyboard_P2";
-
             if (desiredScheme == "Gamepad")
             {
                 if (Gamepad.all.Count > 1)
@@ -104,10 +110,18 @@ public class PlayerMovement : MonoBehaviour
         moveAction = playerInput.actions["Move"];
         jumpAction = playerInput.actions["Jump"];
         fastFallAction = playerInput.actions["FastFall"];
+        
+        if (confusionIcon != null) confusionIcon.gameObject.SetActive(false);
     }
 
     void Update()
     {
+        // 1. Rotación del icono de confusión
+        if (isConfused && confusionIcon != null)
+        {
+            confusionIcon.Rotate(0, 0, confusionRotationSpeed * Time.deltaTime);
+        }
+
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
 
         if (!wasGrounded && isGrounded)
@@ -117,23 +131,8 @@ public class PlayerMovement : MonoBehaviour
         }
         wasGrounded = isGrounded;
 
-        if (isGrounded)
-        {
-            coyoteTimeCounter = coyoteTime;
-        }
-        else
-        {
-            coyoteTimeCounter -= Time.deltaTime;
-        }
-
-        if (jumpAction.WasPressedThisFrame())
-        {
-            jumpBufferCounter = jumpBufferTime;
-        }
-        else
-        {
-            jumpBufferCounter -= Time.deltaTime;
-        }
+        if (isGrounded) coyoteTimeCounter = coyoteTime;
+        else coyoteTimeCounter -= Time.deltaTime;
 
         if (!canMove)
         {
@@ -141,17 +140,40 @@ public class PlayerMovement : MonoBehaviour
             isFastFalling = false;
             isHoldingJump = false;
             stepTimer = 0f;
-
             playerVFX.DeactivateVFX(playerVFX.vfx.Dust);
-
             if (walkAudioSource != null && walkAudioSource.isPlaying) walkAudioSource.Stop();
-
             UpdateAnimator(0f);
             return;
         }
 
+        // ==========================================
+        // PROCESAMIENTO DE INPUTS (INVERSIÓN)
+        // ==========================================
         Vector2 moveInput = moveAction.ReadValue<Vector2>();
-        horizontalInput = moveInput.x;
+        
+        // Simulación de "Botón" para el Joystick Vertical
+        bool stickDownPressed = moveInput.y <= -0.5f && previousMoveY > -0.5f;
+        bool stickDownReleased = moveInput.y > -0.5f && previousMoveY <= -0.5f;
+
+        // Inversión Horizontal
+        horizontalInput = isConfused ? -moveInput.x : moveInput.x;
+
+        // Inversión de Salto y FastFall (Abajo salta, Arriba baja)
+        bool jumpPressed = isConfused ? (fastFallAction.WasPressedThisFrame() || stickDownPressed) : jumpAction.WasPressedThisFrame();
+        bool jumpReleased = isConfused ? (fastFallAction.WasReleasedThisFrame() || stickDownReleased) : jumpAction.WasReleasedThisFrame();
+        
+        isHoldingJump = isConfused ? (fastFallAction.IsInProgress() || moveInput.y <= -0.5f) : jumpAction.IsInProgress();
+        
+        bool fastFallInput = isConfused ? (jumpAction.IsInProgress() || moveInput.y >= 0.5f) : (fastFallAction.IsInProgress() || moveInput.y <= -0.5f);
+        isFastFalling = fastFallInput && !isGrounded;
+
+        previousMoveY = moveInput.y;
+
+        // ==========================================
+        // EJECUCIÓN FÍSICA
+        // ==========================================
+        if (jumpPressed) jumpBufferCounter = jumpBufferTime;
+        else jumpBufferCounter -= Time.deltaTime;
 
         if (horizontalInput != 0)
         {
@@ -160,10 +182,10 @@ public class PlayerMovement : MonoBehaviour
         }
 
         bool isMovingOnGround = isGrounded && Mathf.Abs(horizontalInput) > 0.01f;
+
         if (isMovingOnGround)
         {
             playerVFX.ActivateVFX(playerVFX.vfx.Dust);
-
             stepTimer -= Time.deltaTime;
             if (stepTimer <= 0f)
             {
@@ -185,31 +207,22 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             playerVFX.DeactivateVFX(playerVFX.vfx.Dust);
-
             stepTimer = 0f;
-            if (walkAudioSource != null && walkAudioSource.isPlaying)
-            {
-                walkAudioSource.Stop();
-            }
+            if (walkAudioSource != null && walkAudioSource.isPlaying) walkAudioSource.Stop();
         }
 
         if (jumpBufferCounter > 0f && coyoteTimeCounter > 0f)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
-
             if (jumpSound != null && audioSource != null) audioSource.PlayOneShot(jumpSound);
-
             jumpBufferCounter = 0f;
             coyoteTimeCounter = 0f;
         }
 
-        if (jumpAction.WasReleasedThisFrame() && rb.linearVelocity.y > 0f)
+        if (jumpReleased && rb.linearVelocity.y > 0f)
         {
             coyoteTimeCounter = 0f;
         }
-
-        isHoldingJump = jumpAction.IsInProgress();
-        isFastFalling = (fastFallAction.IsInProgress() || moveInput.y < -0.5f) && !isGrounded;
 
         UpdateAnimator(horizontalInput);
     }
@@ -274,10 +287,7 @@ public class PlayerMovement : MonoBehaviour
     public void TriggerCastAnimation()
     {
         Animator activeAnim = GetActiveAnimator();
-        if (activeAnim != null)
-        {
-            activeAnim.SetTrigger("Cast");
-        }
+        if (activeAnim != null) activeAnim.SetTrigger("Cast");
     }
 
     public void ApplyBounce(float bounceForce)
@@ -308,6 +318,27 @@ public class PlayerMovement : MonoBehaviour
     private void EndKnockback()
     {
         isKnockedBack = false;
+    }
+
+    // ==========================================
+    // SISTEMA DE CONFUSIÓN
+    // ==========================================
+    public void ApplyConfusion(float duration)
+    {
+        if (confusionCoroutine != null) StopCoroutine(confusionCoroutine);
+        confusionCoroutine = StartCoroutine(ConfusionRoutine(duration));
+    }
+
+    private IEnumerator ConfusionRoutine(float duration)
+    {
+        isConfused = true;
+        if (confusionIcon != null) confusionIcon.gameObject.SetActive(true);
+
+        yield return new WaitForSeconds(duration);
+
+        isConfused = false;
+        if (confusionIcon != null) confusionIcon.gameObject.SetActive(false);
+        confusionCoroutine = null;
     }
 
     private void OnDrawGizmosSelected()
