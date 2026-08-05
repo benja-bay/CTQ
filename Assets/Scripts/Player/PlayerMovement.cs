@@ -161,11 +161,10 @@ public class PlayerMovement : MonoBehaviour
         bool jumpReleased = jumpAction.WasReleasedThisFrame();
         isHoldingJump = jumpAction.IsInProgress();
         
-        // Fast Fall puramente ejecutado con el analógico lógico hacia abajo
+        // Fast Fall puramente ejecutado con el eje vertical lógico hacia abajo
         isFastFalling = logicalDown && !isGrounded;
 
         // === LÓGICA DE DROP-DOWN ESTILO CLÁSICO (Abajo + Salto) ===
-        // Intentará bajar si mira "hacia abajo" y presiona el botón de salto
         isTryingToDropDown = logicalDown && jumpPressed;
 
         // CRUCIAL: Si se bajó de la plataforma, consumimos el salto para que no active el Jump Buffer en el aire.
