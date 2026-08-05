@@ -4,8 +4,6 @@ public class PlayerVFX : MonoBehaviour
 {
     public VFX vfx;
 
-    private bool _isVfxActive;
-
     private void Start()
     {
         vfx.DeactivateAllVFX();
@@ -13,18 +11,17 @@ public class PlayerVFX : MonoBehaviour
 
     public void ActivateVFX(ParticleSystem vfxToActivate)
     {
-        if (vfxToActivate != null && !_isVfxActive)
+        if (vfxToActivate != null && !vfxToActivate.isPlaying)
         {
             vfxToActivate.Play();
-            _isVfxActive = true;
         }
     }
+
     public void DeactivateVFX(ParticleSystem vfxToDeactivate)
     {
-        if (vfxToDeactivate != null && _isVfxActive)
+        if (vfxToDeactivate != null && vfxToDeactivate.isPlaying)
         {
             vfxToDeactivate.Stop();
-            _isVfxActive = false;
         }
     }
 }
