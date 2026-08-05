@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
@@ -9,9 +10,11 @@ public class GameManager : MonoBehaviour
     [Header("Configuración de Mapas")]
     public List<int> mapPool; 
     public int mapsPerMatch = 3;
+
     [Header("Configuración de Controles (Lobby)")]
     public string p1ControlScheme = "Keyboard_P1";
     public string p2ControlScheme = "Keyboard_P2";
+
     private List<int> selectedMaps = new List<int>();
     private int currentRoundIndex = 0;
 
@@ -32,6 +35,10 @@ public class GameManager : MonoBehaviour
     [Header("Configuración de Sonido")]
     public float timeWarningThreshold = 10f;
     private bool isTimeWarningPlaying = false;
+
+    [Header("Game Feel - Fin de Ronda")]
+    public float zoomDelay = 1.5f; 
+    public float slowMotionScale = 0.3f; 
 
     private PlayerRole player1;
     private PlayerRole player2;
@@ -170,24 +177,44 @@ public class GameManager : MonoBehaviour
         isTimeWarningPlaying = false;
     }
 
+    // === NUEVA SECUENCIA DE FIN DE RONDA ===
+
     public void HeroCatchesBanner()
     {
         if (!isRoundActive) return; 
         isRoundActive = false;
         if (AudioManager.instance != null) AudioManager.instance.StopTimeWarning();
         heroPoints++;
-        CheckMatchWinner();
+        StartCoroutine(RoundEndSequence(Role.Hero));
     }
     
     void BannerSurvived()
     {
         if (AudioManager.instance != null) AudioManager.instance.StopTimeWarning();
         bannerPoints++;
-        CheckMatchWinner();
+        StartCoroutine(RoundEndSequence(Role.Banner));
     }
 
-    void CheckMatchWinner()
+    private IEnumerator RoundEndSequence(Role winner)
     {
+        // 1. Aplicar Slow Motion
+        Time.timeScale = slowMotionScale;
+        
+        // 2. Hacer Zoom al ganador
+        Transform winnerTransform = GameObject.FindGameObjectWithTag(winner.ToString())?.transform;
+        CinemachineMultiplayer cam = FindAnyObjectByType<CinemachineMultiplayer>();
+        if (cam != null && winnerTransform != null) 
+        {
+            cam.FocusOnTarget(winnerTransform);
+        }
+
+        // 3. Esperar el tiempo de Game Feel (usamos Realtime porque el Time.timeScale está alterado)
+        yield return new WaitForSecondsRealtime(zoomDelay);
+
+        // Restaurar el tiempo a la normalidad
+        Time.timeScale = 1f;
+
+        // 4. Evaluar si alguien ganó la partida completa
         if (heroPoints >= pointsToWinMatch)
         {
             if (UIManager.instance != null) UIManager.instance.ShowVictoryScreen(Role.Hero);
@@ -198,6 +225,12 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+            // 5. Si la partida continúa, reproducimos la transición antes de cargar el mapa
+            if (UIManager.instance != null) 
+            {
+                yield return StartCoroutine(UIManager.instance.PlayTransitionIn());
+            }
+            
             AdvanceToNextMap();
         }
     }

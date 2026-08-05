@@ -28,4 +28,14 @@ public class CinemachineMultiplayer : MonoBehaviour
         
         targetGroup.Targets = newTargets;
     }
+    
+    public void FocusOnTarget(Transform target)
+    {
+        if (targetGroup == null) return;
+        
+        targetGroup.Targets = new List<CinemachineTargetGroup.Target>
+        {
+            new CinemachineTargetGroup.Target { Object = target, Weight = 1f, Radius = 1.5f }
+        };
+    }
 }
