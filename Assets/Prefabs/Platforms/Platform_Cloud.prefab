@@ -18,7 +18,7 @@ PrefabInstance:
       objectReference: {fileID: 8108050977641069107, guid: 9ae1b3d16bbeb0040be9f964474be285, type: 3}
     - target: {fileID: 4078375286561993995, guid: 2baa1fb21004da340be5cfbdff9af95f, type: 3}
       propertyPath: m_Name
-      value: Platform_Cloud Variant
+      value: Platform_Cloud
       objectReference: {fileID: 0}
     - target: {fileID: 4940691917841130387, guid: 2baa1fb21004da340be5cfbdff9af95f, type: 3}
       propertyPath: m_LocalPosition.x
