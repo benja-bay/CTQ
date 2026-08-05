@@ -8,6 +8,10 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager instance;
 
+    [Header("Transición de Escena (Código)")]
+    public Image transitionImage; 
+    public float transitionDuration = 1f;
+
     [Header("Countdown UI")]
     public Image countdownImage;        
     public Sprite[] countdownSprites;   
@@ -110,6 +114,7 @@ public class UIManager : MonoBehaviour
         int heroPts = GameManager.instance.GetHeroPoints();
         int bannerPts = GameManager.instance.GetBannerPoints();
 
+        // (Aquí sigue tu lógica normal de actualización de UI para P1 y P2)
         if (p1Role != null)
         {
             if (p1AvatarImage != null)
@@ -173,7 +178,7 @@ public class UIManager : MonoBehaviour
             p2ItemIconImage.sprite = p2Inventory.hasItem ? p2Inventory.currentItemData.itemIcon : null;
             p2ItemIconImage.enabled = p2Inventory.hasItem;
         }
-        
+
         if (p1Inventory != null && p1SpeedBarFill != null && p1SpeedBarContainer != null)
         {
             if (p1Inventory.currentSpeedDuration > 0)
@@ -225,19 +230,64 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    // ==========================================
+    // SISTEMA DE TRANSICIÓN POR CÓDIGO
+    // ==========================================
+    
+    // Cierra la pantalla (de 0 a 1)
+    public IEnumerator PlayTransitionIn()
+    {
+        if (transitionImage != null)
+        {
+            float elapsed = 0f;
+            while (elapsed < transitionDuration)
+            {
+                // Usamos unscaledDeltaTime para ignorar el Slow Motion
+                elapsed += Time.unscaledDeltaTime; 
+                transitionImage.fillAmount = Mathf.Lerp(0f, 1f, elapsed / transitionDuration);
+                yield return null;
+            }
+            transitionImage.fillAmount = 1f;
+        }
+    }
+
+    // Abre la pantalla (de 1 a 0)
+    public IEnumerator PlayTransitionOut()
+    {
+        if (transitionImage != null)
+        {
+            float elapsed = 0f;
+            while (elapsed < transitionDuration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                transitionImage.fillAmount = Mathf.Lerp(1f, 0f, elapsed / transitionDuration);
+                yield return null;
+            }
+            transitionImage.fillAmount = 0f;
+        }
+    }
+
     public void StartCountdown()
     {
+        StartCoroutine(StartRoundSequence());
+    }
+
+    // Unificamos el Fade Out y el Countdown
+    private IEnumerator StartRoundSequence()
+    {
+        // 1. Abrir la pantalla suavemente al iniciar el mapa
+        if (transitionImage != null) 
+        {
+            yield return StartCoroutine(PlayTransitionOut());
+        }
+
+        // 2. Iniciar el conteo numérico
         if (countdownImage == null || countdownSprites == null || countdownSprites.Length == 0)
         {
             GameManager.instance.BeginRoundAfterCountdown();
-            return;
+            yield break;
         }
         
-        StartCoroutine(CountdownRoutine());
-    }
-
-    private IEnumerator CountdownRoutine()
-    {
         countdownImage.gameObject.SetActive(true);
 
         for (int i = 0; i < countdownSprites.Length; i++)

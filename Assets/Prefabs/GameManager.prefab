@@ -53,3 +53,5 @@ MonoBehaviour:
   player1Role: 0
   player2Role: 1
   timeWarningThreshold: 3
+  zoomDelay: 2
+  slowMotionScale: 0.4
