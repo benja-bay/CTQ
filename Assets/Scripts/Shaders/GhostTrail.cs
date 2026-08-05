@@ -13,11 +13,6 @@ public class GhostTrail : MonoBehaviour
     private bool isTrailActive = false;
     private float spawnTimer;
 
-    private void Awake()
-    {
-        playerSprite = GetComponentInChildren<SpriteRenderer>();
-    }
-
     private void Update()
     {
         if (isTrailActive)
@@ -34,10 +29,34 @@ public class GhostTrail : MonoBehaviour
     public void SetTrailActive(bool active)
     {
         isTrailActive = active;
+        
+        if (active)
+        {
+            // Actualizamos la referencia del sprite justo antes de empezar a dejar el rastro
+            UpdateActiveSprite();
+            spawnTimer = spawnInterval; // Fuerza a crear el primer fantasma al instante
+        }
+    }
+
+    // Busca todos los SpriteRenderers hijos y se queda con el que esté activo en este momento
+    private void UpdateActiveSprite()
+    {
+        SpriteRenderer[] renderers = GetComponentsInChildren<SpriteRenderer>(false);
+        foreach (var sr in renderers)
+        {
+            if (sr.gameObject.activeInHierarchy)
+            {
+                playerSprite = sr;
+                return;
+            }
+        }
     }
 
     private void SpawnGhost()
     {
+        // Control de seguridad por si no encontró un sprite activo
+        if (playerSprite == null) return;
+
         GameObject ghostObj = new GameObject("GhostFrame");
         ghostObj.transform.position = playerSprite.transform.position;
         ghostObj.transform.rotation = playerSprite.transform.rotation;
@@ -61,17 +80,30 @@ public class GhostTrail : MonoBehaviour
     private IEnumerator FadeAndDestroyGhost(GameObject ghostObj, SpriteRenderer ghostSr)
     {
         float elapsed = 0f;
-
         Material matInstance = ghostSr.material;
-        matInstance.SetColor("_GhostColor", ghostColor);
+        
+        if (matInstance != null && matInstance.HasProperty("_GhostColor"))
+        {
+            matInstance.SetColor("_GhostColor", ghostColor);
+        }
 
         while (elapsed < ghostLifetime)
         {
             elapsed += Time.deltaTime;
             float alpha = Mathf.Lerp(1f, 0f, elapsed / ghostLifetime);
-
-            matInstance.SetFloat("_Alpha", alpha);
-
+            
+            if (matInstance != null && matInstance.HasProperty("_Alpha"))
+            {
+                matInstance.SetFloat("_Alpha", alpha);
+            }
+            else
+            {
+                // Fallback por si el material no tiene la propiedad _Alpha
+                Color c = ghostSr.color;
+                c.a = alpha;
+                ghostSr.color = c;
+            }
+            
             yield return null;
         }
 
