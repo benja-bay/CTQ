@@ -1,3 +1,4 @@
+using Player;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(Collider2D))]

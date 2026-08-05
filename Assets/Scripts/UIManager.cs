@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement; 
 using System.Collections;
+using Player;
 
 public class UIManager : MonoBehaviour
 {

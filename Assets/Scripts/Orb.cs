@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using Player;
 
 [RequireComponent(typeof(SpriteRenderer), typeof(Collider2D))]
 public class Orb : MonoBehaviour

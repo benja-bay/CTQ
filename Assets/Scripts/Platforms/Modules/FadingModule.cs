@@ -1,5 +1,6 @@
 using System.Collections;
 using Platforms.Data;
+using Player;
 using UnityEngine;
 
 namespace Platforms.Modules
