@@ -18504,7 +18504,7 @@ MonoBehaviour:
   timeInputField: {fileID: 353644943}
   p1Movement: {fileID: 2130818817}
   p2Movement: {fileID: 1829132038}
-  firstMapName: Level_1
+  firstMapName: SC_Level_1
   mainMenuName: MainMenu
 --- !u!4 &1111791588
 Transform:
@@ -21270,7 +21270,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1306687435010543999, guid: 0b0ebe0021c91064887e795e4cdb7258, type: 3}
       propertyPath: 'mapPool.Array.data[2]'
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 1852786456785034910, guid: 0b0ebe0021c91064887e795e4cdb7258, type: 3}
       propertyPath: m_LocalPosition.x
