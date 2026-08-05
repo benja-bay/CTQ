@@ -15,7 +15,7 @@ MonoBehaviour:
   itemType: 3
   itemName: Spider Web
   itemIcon: {fileID: 21300000, guid: 8e122cb65e2044c4b87f331d8be31311, type: 3}
-  effectDuration: 2.5
+  effectDuration: 1
   mainPower: 0.4
   secondaryPower: 25
   itemPrefab: {fileID: 1217744134666790810, guid: 94ee1108b9b0fa041ab8e0cbb07d40d2, type: 3}
