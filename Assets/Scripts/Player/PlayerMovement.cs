@@ -49,20 +49,19 @@ public class PlayerMovement : MonoBehaviour
     public bool isKnockedBack = false;
     public bool isPreparing = false;
     public bool isCasting = false;
+    
+    // Variable pública leída por OneWayModule.cs
+    public bool isTryingToDropDown { get; private set; } 
 
     private Rigidbody2D rb;
     private float horizontalInput;
     private bool isGrounded;
     private bool isFastFalling;
     private bool isHoldingJump;
-    
-    // Variable para trackear el stick en gamepads
-    private float previousMoveY;
 
     private PlayerInput playerInput;
     private InputAction moveAction;
     private InputAction jumpAction;
-    private InputAction fastFallAction;
     private PlayerVFX playerVFX;
 
     void Start()
@@ -109,14 +108,12 @@ public class PlayerMovement : MonoBehaviour
 
         moveAction = playerInput.actions["Move"];
         jumpAction = playerInput.actions["Jump"];
-        fastFallAction = playerInput.actions["FastFall"];
         
         if (confusionIcon != null) confusionIcon.gameObject.SetActive(false);
     }
 
     void Update()
     {
-        // 1. Rotación del icono de confusión
         if (isConfused && confusionIcon != null)
         {
             confusionIcon.Rotate(0, 0, confusionRotationSpeed * Time.deltaTime);
@@ -139,6 +136,7 @@ public class PlayerMovement : MonoBehaviour
             horizontalInput = 0f;
             isFastFalling = false;
             isHoldingJump = false;
+            isTryingToDropDown = false;
             stepTimer = 0f;
             playerVFX.DeactivateVFX(playerVFX.vfx.Dust);
             if (walkAudioSource != null && walkAudioSource.isPlaying) walkAudioSource.Stop();
@@ -147,27 +145,34 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // ==========================================
-        // PROCESAMIENTO DE INPUTS (INVERSIÓN)
+        // PROCESAMIENTO DE INPUTS (INVERSIÓN Y COMBOS)
         // ==========================================
         Vector2 moveInput = moveAction.ReadValue<Vector2>();
         
-        // Simulación de "Botón" para el Joystick Vertical
-        bool stickDownPressed = moveInput.y <= -0.5f && previousMoveY > -0.5f;
-        bool stickDownReleased = moveInput.y > -0.5f && previousMoveY <= -0.5f;
-
         // Inversión Horizontal
         horizontalInput = isConfused ? -moveInput.x : moveInput.x;
 
-        // Inversión de Salto y FastFall (Abajo salta, Arriba baja)
-        bool jumpPressed = isConfused ? (fastFallAction.WasPressedThisFrame() || stickDownPressed) : jumpAction.WasPressedThisFrame();
-        bool jumpReleased = isConfused ? (fastFallAction.WasReleasedThisFrame() || stickDownReleased) : jumpAction.WasReleasedThisFrame();
-        
-        isHoldingJump = isConfused ? (fastFallAction.IsInProgress() || moveInput.y <= -0.5f) : jumpAction.IsInProgress();
-        
-        bool fastFallInput = isConfused ? (jumpAction.IsInProgress() || moveInput.y >= 0.5f) : (fastFallAction.IsInProgress() || moveInput.y <= -0.5f);
-        isFastFalling = fastFallInput && !isGrounded;
+        // Dirección lógica "Hacia Abajo" (Para Fast Fall y Drop-down)
+        // Si está confundido, apuntar arriba cuenta como apuntar abajo.
+        bool logicalDown = isConfused ? (moveInput.y >= 0.5f) : (moveInput.y <= -0.5f);
 
-        previousMoveY = moveInput.y;
+        // Salto se mantiene SIEMPRE en el botón principal (A / Espacio)
+        bool jumpPressed = jumpAction.WasPressedThisFrame();
+        bool jumpReleased = jumpAction.WasReleasedThisFrame();
+        isHoldingJump = jumpAction.IsInProgress();
+        
+        // Fast Fall puramente ejecutado con el analógico lógico hacia abajo
+        isFastFalling = logicalDown && !isGrounded;
+
+        // === LÓGICA DE DROP-DOWN ESTILO CLÁSICO (Abajo + Salto) ===
+        // Intentará bajar si mira "hacia abajo" y presiona el botón de salto
+        isTryingToDropDown = logicalDown && jumpPressed;
+
+        // CRUCIAL: Si se bajó de la plataforma, consumimos el salto para que no active el Jump Buffer en el aire.
+        if (isTryingToDropDown)
+        {
+            jumpPressed = false;
+        }
 
         // ==========================================
         // EJECUCIÓN FÍSICA
