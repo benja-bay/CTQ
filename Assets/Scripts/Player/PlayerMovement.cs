@@ -20,6 +20,8 @@ public class PlayerMovement : MonoBehaviour
     private float coyoteTimeCounter;
     public float jumpBufferTime = 0.2f;
     private float jumpBufferCounter;
+    
+    private float dropDownBufferCounter;
 
     [Header("Detección de Suelo")]
     public Transform groundCheck;
@@ -28,7 +30,7 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Estado de Confusión")]
     public Transform confusionIcon; 
-    public float confusionRotationSpeed = -360f; // Grados por segundo
+    public float confusionRotationSpeed = -360f;
     public bool isConfused { get; private set; }
     private Coroutine confusionCoroutine;
 
@@ -50,7 +52,6 @@ public class PlayerMovement : MonoBehaviour
     public bool isPreparing = false;
     public bool isCasting = false;
     
-    // Variable pública leída por OneWayModule.cs
     public bool isTryingToDropDown { get; private set; } 
 
     private Rigidbody2D rb;
@@ -137,38 +138,47 @@ public class PlayerMovement : MonoBehaviour
             isFastFalling = false;
             isHoldingJump = false;
             isTryingToDropDown = false;
+            dropDownBufferCounter = 0f;
             stepTimer = 0f;
             playerVFX.DeactivateVFX(playerVFX.vfx.Dust);
             if (walkAudioSource != null && walkAudioSource.isPlaying) walkAudioSource.Stop();
             UpdateAnimator(0f);
             return;
         }
-
-        // ==========================================
-        // PROCESAMIENTO DE INPUTS (INVERSIÓN Y COMBOS)
-        // ==========================================
+        
         Vector2 moveInput = moveAction.ReadValue<Vector2>();
         
-        // Inversión Horizontal
         horizontalInput = isConfused ? -moveInput.x : moveInput.x;
-
-        // Dirección lógica "Hacia Abajo" (Para Fast Fall y Drop-down)
-        // Si está confundido, apuntar arriba cuenta como apuntar abajo.
+        
         bool logicalDown = isConfused ? (moveInput.y >= 0.5f) : (moveInput.y <= -0.5f);
-
-        // Salto se mantiene SIEMPRE en el botón principal (A / Espacio)
+        
         bool jumpPressed = jumpAction.WasPressedThisFrame();
         bool jumpReleased = jumpAction.WasReleasedThisFrame();
         isHoldingJump = jumpAction.IsInProgress();
         
-        // Fast Fall puramente ejecutado con el eje vertical lógico hacia abajo
         isFastFalling = logicalDown && !isGrounded;
+        
+        bool isKeyboard = playerInput.currentControlScheme != null && playerInput.currentControlScheme.Contains("Keyboard");
 
-        // === LÓGICA DE DROP-DOWN ESTILO CLÁSICO (Abajo + Salto) ===
-        isTryingToDropDown = logicalDown && jumpPressed;
-
-        // CRUCIAL: Si se bajó de la plataforma, consumimos el salto para que no active el Jump Buffer en el aire.
-        if (isTryingToDropDown)
+        if (isKeyboard)
+        {
+            isTryingToDropDown = logicalDown;
+        }
+        else
+        {
+            if (logicalDown && jumpPressed)
+            {
+                dropDownBufferCounter = jumpBufferTime; 
+            }
+            else
+            {
+                dropDownBufferCounter -= Time.deltaTime;
+            }
+            
+            isTryingToDropDown = dropDownBufferCounter > 0f;
+        }
+        
+        if (logicalDown && jumpPressed && !isKeyboard)
         {
             jumpPressed = false;
         }
