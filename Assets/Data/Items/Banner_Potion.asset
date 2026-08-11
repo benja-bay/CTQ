@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemType: 4
   itemName: Speed Fan
-  itemIcon: {fileID: 21300000, guid: 2c5f55e4d4cf1b348bdc8bfef4b57b76, type: 3}
+  itemIcon: {fileID: 21300000, guid: 5b730e270df8fa0468a74f1e5c726d57, type: 3}
   effectDuration: 3
   mainPower: 1.5
   secondaryPower: 0
