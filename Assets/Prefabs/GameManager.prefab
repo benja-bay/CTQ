@@ -44,8 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 322ac21a24fc42baa178ee4a7fef12d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
-  mapPool: 020000000300000004000000
-  mapsPerMatch: 3
+  mapPool: 02000000030000000400000005000000
+  mapsPerMatch: 4
   p1ControlScheme: Keyboard_P1
   p2ControlScheme: Keyboard_P2
   survivalTime: 30

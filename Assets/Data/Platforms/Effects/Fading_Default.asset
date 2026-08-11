@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8baf42d4d932491e9674a2a88d4f4115, type: 3}
   m_Name: Fading_Default
   m_EditorClassIdentifier: Assembly-CSharp::FadingData
-  supportTime: 0.5
+  supportTime: 1.25
   shakeIntensity: 0.05
   fadeTime: 0.3
-  respawnTime: 3
+  respawnTime: 2.5
